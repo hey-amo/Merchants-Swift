@@ -184,7 +184,7 @@ final class GameModelTests: XCTestCase {
     }
     
     func testShipLoading() throws {
-        let ship = Ship()
+        var ship = Ship()
         let cube = GoodsCube(color: .red)
         
         // Test loading
@@ -381,8 +381,8 @@ final class GameModelTests: XCTestCase {
             XCTAssertEqual(player.ships.count, 2)
         }
         
-        // Deck should have 54 cards remaining (60 - 6 for marketplace - 12 for players)
-        XCTAssertEqual(game.deck.remainingCards, 54)
+        // Deck should have 42 cards remaining (60 - (6 for marketplace - 12 for players))
+        XCTAssertEqual(game.deck.remainingCards, 42)
         
         // Marketplace should have 6 cards
         XCTAssertEqual(game.marketplace.getAllCards().count, 6)
@@ -398,11 +398,16 @@ final class GameModelTests: XCTestCase {
         game.nextPhase()
         XCTAssertEqual(game.currentPhase, .delivery)
         
-        // Move to next turn (should reset to purchase phase)
+        // Move to next turn (should reset to purchase phase and advance to next player)
         game.nextPhase()
         XCTAssertEqual(game.currentPhase, .purchase)
-        XCTAssertEqual(game.turnNumber, 2)
-        XCTAssertEqual(game.currentPlayerIndex, 1) // Second player
+        XCTAssertEqual(game.turnNumber, 1) // Turn number only increments after a full round (all 4 players)
+        XCTAssertEqual(game.currentPlayerIndex, 1) // Second player (index 1)
+        
+        // Explanation: The turn number logic works as follows:
+        // - Turn 1: Player 1 (index 0) → Player 2 (index 1) → Player 3 (index 2) → Player 4 (index 3)
+        // - Turn 2: Player 1 (index 0) → Player 2 (index 1) → Player 3 (index 2) → Player 4 (index 3)
+        // The turnNumber only increments when currentPlayerIndex becomes 0 again (full round completed)
     }
     
     func testGameEndCondition() throws {

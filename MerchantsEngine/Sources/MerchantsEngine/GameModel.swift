@@ -479,12 +479,14 @@ public class MerchantsGame: ObservableObject {
         // Snake draft: last player picks first, then clockwise, then reverse
         let playerIndex = players.firstIndex(of: player) ?? 0
         
+        print ("player index: \(playerIndex)")
+        
         // For now, just load with random cubes (simplified)
         let availableColors = GoodsColour.allCases
         for ship in player.ships {
             if let randomColor = availableColors.randomElement(),
                let cube = goodsCubes[randomColor]?.popLast() {
-                player.loadShip(ship, with: cube)
+                let _ = player.loadShip(ship, with: cube)
                 print("Loaded \(randomColor.description) cube onto ship for player \(player.id)")
             }
         }
@@ -544,7 +546,7 @@ public class MerchantsGame: ObservableObject {
         guard let newCube = goodsCubes[newColor]?.popLast() else {
             print("No \(newColor.description) cubes available")
             // Put the original cube back
-            player.loadShip(ship, with: cube)
+            let _ =  player.loadShip(ship, with: cube)
             return false
         }
         
@@ -552,7 +554,7 @@ public class MerchantsGame: ObservableObject {
         goodsCubes[cube.color]?.append(cube)
         
         // Load new cube
-        player.loadShip(ship, with: newCube)
+        let _ = player.loadShip(ship, with: newCube)
         
         print("Player \(player.id) exchanged \(cube.color.description) cube for \(newColor.description) cube")
         return true
@@ -580,7 +582,7 @@ public class MerchantsGame: ObservableObject {
         let card = availableCards.removeFirst()
         specialBuildingCards[buildingType] = availableCards
         
-        bank.debit(player: player, amount: cost)
+        let _ = bank.debit(player: player, amount: cost)
         player.addSpecialBuilding(card)
         
         print("Player \(player.id) bought \(buildingType.description) for \(cost) coins")
@@ -591,7 +593,7 @@ public class MerchantsGame: ObservableObject {
                let cube = goodsCubes[randomColor]?.popLast() {
                 let newShip = Ship()
                 player.addShip(newShip)
-                player.loadShip(newShip, with: cube)
+                let _ = player.loadShip(newShip, with: cube)
                 print("New ship loaded with \(randomColor.description) cube")
             }
         }
@@ -627,7 +629,7 @@ public class MerchantsGame: ObservableObject {
         
         // Remove cards from player's hand
         for card in cards {
-            player.removeCard(card)
+            let _ = player.removeCard(card)
         }
         
         // Add cards to marketplace
