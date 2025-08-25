@@ -10,6 +10,22 @@ import SwiftUI
 
 // MARK: - Enums and Constants
 
+public enum Avatar: String, CaseIterable {
+    case playerBlue = "player-blue"
+    case playerRed = "player-red"
+    case playerGreen = "player-green"
+    case playerYellow = "player-yellow"
+    
+    // Computed property to get the UIImage
+    var image: UIImage? {
+        return UIImage(named: self.rawValue)
+    }
+    
+    // For SwiftUI
+    var imageName: String {
+        return self.rawValue
+    }
+}
 public enum GoodsColour: Int, CaseIterable {
     case white = 0, blue = 1, red = 2, green = 3, yellow = 4, brown = 5
     
@@ -49,16 +65,6 @@ public enum SpecialBuildingTypes: CaseIterable {
     }
 }
 
-public enum GamePhase: CaseIterable {
-    case purchase, delivery
-    
-    public var description: String {
-        switch self {
-        case .purchase: return "Purchase"
-        case .delivery: return "Delivery"
-        }
-    }
-}
 
 public enum GameState: CaseIterable {
     case setup, playing, gameOver
@@ -68,6 +74,17 @@ public enum GameState: CaseIterable {
         case .setup: return "Setup"
         case .playing: return "Playing"
         case .gameOver: return "Game Over"
+        }
+    }
+}
+
+public enum GamePhase: CaseIterable {
+    case purchase, delivery
+    
+    public var description: String {
+        switch self {
+        case .purchase: return "Purchase"
+        case .delivery: return "Delivery"
         }
     }
 }
@@ -389,7 +406,7 @@ public class MerchantsGame: ObservableObject {
         setupSupply()
         print("Supply setup complete")
         
-        // Setup deck and marketplace
+        // Shuffle deck and prepare the marketplace with 6 cards
         deck.shuffle()
         marketplace.setupMarketplace(from: deck)
         print("Deck shuffled and marketplace created")
