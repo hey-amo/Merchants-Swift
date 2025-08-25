@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
+import MerchantsEngine
 
 // List all avatars in a row
-
 struct PlayerAvatarRowView: View {
     var body: some View {
         Text("Avatar rows")
