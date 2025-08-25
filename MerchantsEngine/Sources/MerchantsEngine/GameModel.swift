@@ -17,13 +17,22 @@ public enum Avatar: String, CaseIterable {
     case playerYellow = "player-yellow"
     
     // Computed property to get the UIImage
-    var image: UIImage? {
+    public var image: UIImage? {
         return UIImage(named: self.rawValue)
     }
     
     // For SwiftUI
-    var imageName: String {
+    public var imageName: String {
         return self.rawValue
+    }
+    
+    public var colour: String {
+        switch self {
+        case .playerRed: return "Red"
+        case .playerBlue: return "Blue"
+        case .playerYellow: return "Yellow"
+        case .playerGreen: return "Green"
+        }
     }
 }
 public enum GoodsColour: Int, CaseIterable {
@@ -196,6 +205,7 @@ public class Player: Identifiable, Equatable {
     public var specialBuildings: [SpecialBuildingCard] = []
     public var ships: [Ship] = []
     public var isOnTurn: Bool = false
+    public var avatar: Avatar?
     
     public var handSize: Int {
         let baseHandSize = 6
