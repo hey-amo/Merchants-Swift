@@ -6,13 +6,36 @@
 //
 
 import SwiftUI
+import MerchantsEngine
 
 struct PlayerAvatarView: View {
+    let avatar: Avatar
+    var size: CGFloat = 48
+    
     var body: some View {
-        Image("player-blue")
+        Image(avatar.imageName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
+            .clipShape(Circle())
+            .overlay(
+                Circle().stroke(Color(.systemGray4), lineWidth: 0)
+            )
     }
 }
 
-#Preview {
-    PlayerAvatarView()
+#Preview("Blue") {
+    PlayerAvatarView(avatar: .playerBlue)
+}
+
+#Preview("Red") {
+    PlayerAvatarView(avatar: .playerRed)
+}
+
+#Preview("Green") {
+    PlayerAvatarView(avatar: .playerGreen)
+}
+
+#Preview("Yellow") {
+    PlayerAvatarView(avatar: .playerYellow)
 }
