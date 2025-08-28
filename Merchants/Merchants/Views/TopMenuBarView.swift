@@ -8,13 +8,17 @@
 import SwiftUI
 
 struct TopMenuBarView: View {
+    var buildNumber: String {
+            Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+        }
+    
     var body: some View {
     
         // Top bar: Hamburger menu, avatars, settings button
         HStack(alignment: .center) {
             // Hamburger menu
             
-            Text("Merchants, Build: 3231")
+            Text("Merchants, Build: \(buildNumber)")
                 .font(.caption)
             
             Spacer(minLength: 10)

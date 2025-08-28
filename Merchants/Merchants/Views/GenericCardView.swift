@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CardBGView: View {
+struct GenericCardView: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 18)
                       .fill(Color(.systemGray6))
@@ -21,5 +21,5 @@ struct CardBGView: View {
 }
 
 #Preview {
-    CardBGView()
+    GenericCardView()
 }

@@ -14,10 +14,10 @@ struct GameBoardView: View {
             TopMenuBarView()
                 .padding(.bottom, 5)
             
-            // Avatars row (centered)
             PlayerAvatarRowView()
-            
             Spacer()
+            
+            
             
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

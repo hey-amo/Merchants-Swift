@@ -37,7 +37,7 @@ struct ShipCardView: View {
     
     var body: some View {
         ZStack {
-            CardBGView()
+            GenericCardView()
             
             VStack(spacing: 16) {
                Image("ship-nobg")

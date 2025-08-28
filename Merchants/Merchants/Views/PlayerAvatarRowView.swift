@@ -30,33 +30,31 @@ struct PlayerAvatarRowView: View {
                 Button(action: {
                     print("Player \(player.playerNumber) avatar tapped")
                 }) {
-                    VStack(spacing: 2) {
+                    VStack(spacing: 8) {
                         ZStack {
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: 16)
                                 .fill(Color(.systemGray6))
-                                .frame(width: 70, height: 90)
+                                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+                                .frame(width: 76, height: 96)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .stroke(player.isOnTurn ? Color.blue : Color(.systemGray4), lineWidth: player.isOnTurn ? 3 : 2)
+                                        .stroke(player.isOnTurn ? Color.blue : Color(.systemGray4), lineWidth: player.isOnTurn ? 3 : 1)
                                 )
-                            
-                            VStack(spacing: 6) {
+
+                            VStack(spacing: 8) {
                                 PlayerAvatarView(avatar: player.avatar, size: 48)
-                                
+
                                 Text("£\(player.coins)")
-                                    .font(.caption)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.secondary)
+                                    .font(.footnote)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(player.isOnTurn ? .primary : .secondary)
+                                    .monospacedDigit()
                             }
                         }
-                        // Player name
-                        /*Text("Player \(player.playerNumber)")
-                            .font(.footnote)
-                            .fontWeight(player.isOnTurn ? .bold : .regular)
-                            .foregroundColor(player.isOnTurn ? .blue : .primary)*/
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Player \(player.playerNumber), coins £\(player.coins)\(player.isOnTurn ? ", on turn" : "")")
             }
         }
         .padding(.vertical, 8)

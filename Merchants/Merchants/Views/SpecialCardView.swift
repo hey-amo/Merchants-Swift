@@ -9,11 +9,11 @@ import SwiftUI
 
 import MerchantsEngine
 
-struct OfficeCardView: View {
+struct SpecialCardView: View {
 
     var body: some View {
         ZStack {
-            CardBGView()
+            GenericCardView()
             Text("Office")
         }
         
@@ -22,5 +22,5 @@ struct OfficeCardView: View {
 
 
 #Preview {
-    OfficeCardView()
+    SpecialCardView()
 }
