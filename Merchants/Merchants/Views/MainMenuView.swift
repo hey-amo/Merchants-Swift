@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainMenuView: View {
+    private let shipCornerRadius: CGFloat = 25
     var body: some View {
         VStack(spacing: 40) {
             Spacer()
@@ -15,7 +16,8 @@ struct MainMenuView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 180, height: 180)
-                .padding(.bottom, 20)
+                .clipShape(RoundedRectangle(cornerRadius: shipCornerRadius))
+                .padding(.bottom, 8)
             
             Text("Merchants")
                 .font(.largeTitle)

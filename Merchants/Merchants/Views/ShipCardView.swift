@@ -11,6 +11,18 @@ import MerchantsEngine
 struct ShipCardView: View {
     var cubeColor: GoodsColour? = nil
     
+    func crateImageName(for colour: GoodsColour) -> String {
+        switch colour {
+        case .white: return "crate-white"
+        case .blue: return "crate-blue"
+        case .green: return "crate-green"
+        case .yellow: return "crate-yellow"
+        case .brown: return "crate-brown"
+        case .red: return "crate-red"
+        
+        }
+    }
+    
     // Map GoodsColour to system colors
     func systemColor(for colour: GoodsColour) -> Color {
         switch colour {
@@ -38,20 +50,19 @@ struct ShipCardView: View {
     
                ZStack {
                    if let cubeColor = cubeColor {
-                       // draw cube
-                       RoundedRectangle(cornerRadius: 8)
-                           .fill(systemColor(for: cubeColor))
+                       Image(crateImageName(for:cubeColor))
+                           .resizable()
+                           .scaledToFit()
                            .frame(width: 32, height: 32)
                            .overlay(
-                               RoundedRectangle(cornerRadius: 8)
-                                   .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                               Rectangle()
+                                   .stroke(Color.black, lineWidth: 1)
                            )
-                           .shadow(radius: 2)
                    }
                    else {
                        // dotted outline empty box
                        RoundedRectangle(cornerRadius: 8)
-                           .stroke(Color(.systemGray4), style: StrokeStyle(lineWidth: 2, dash: [4]))
+                           .stroke(Color(.gray), style: StrokeStyle(lineWidth: 2, dash: [4]))
                            .frame(width: 36, height: 36)
                            .background(Color.clear)
                    }

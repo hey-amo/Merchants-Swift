@@ -12,7 +12,10 @@ import MerchantsEngine
 struct OfficeCardView: View {
 
     var body: some View {
-        CardBGView()
+        ZStack {
+            CardBGView()
+            Text("Office")
+        }
         
     }
 }
