@@ -750,3 +750,8 @@ public class MerchantsGame: ObservableObject {
         }
     }
 }
+
+// MARK: AI Player
+public enum AIStrategy {
+    case cubesAndCards
+}

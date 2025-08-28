@@ -13,15 +13,16 @@ struct PlayerInfo {
     let coins: Int
     let isOnTurn: Bool
     let playerNumber: Int
+    let cardsInHand: Int
 }
 
 struct PlayerAvatarRowView: View {
     // Dummy data for preview/testing
     let players: [PlayerInfo] = [
-        PlayerInfo(avatar: .playerBlue, coins: 12, isOnTurn: true, playerNumber: 1),
-        PlayerInfo(avatar: .playerRed, coins: 8, isOnTurn: false, playerNumber: 2),
-        PlayerInfo(avatar: .playerGreen, coins: 15, isOnTurn: false, playerNumber: 3),
-        PlayerInfo(avatar: .playerYellow, coins: 10, isOnTurn: false, playerNumber: 4)
+        PlayerInfo(avatar: .playerBlue, coins: 99, isOnTurn: true, playerNumber: 1, cardsInHand: 3),
+        PlayerInfo(avatar: .playerRed, coins: 8, isOnTurn: false, playerNumber: 2, cardsInHand: 0),
+        PlayerInfo(avatar: .playerGreen, coins: 15, isOnTurn: false, playerNumber: 3, cardsInHand: 8),
+        PlayerInfo(avatar: .playerYellow, coins: 10, isOnTurn: false, playerNumber: 4, cardsInHand: 1)
     ]
     
     var body: some View {
@@ -34,7 +35,6 @@ struct PlayerAvatarRowView: View {
                         ZStack {
                             RoundedRectangle(cornerRadius: 16)
                                 .fill(Color(.systemGray6))
-                                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
                                 .frame(width: 76, height: 96)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16)
@@ -44,11 +44,19 @@ struct PlayerAvatarRowView: View {
                             VStack(spacing: 8) {
                                 PlayerAvatarView(avatar: player.avatar, size: 48)
 
-                                Text("£\(player.coins)")
-                                    .font(.footnote)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(player.isOnTurn ? .primary : .secondary)
-                                    .monospacedDigit()
+                                HStack(spacing:6) {
+                                    Text("£\(player.coins)")
+                                        .font(.footnote)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(player.isOnTurn ? .primary : .secondary)
+                                        .monospacedDigit()
+                                                    
+                                         // Display how many cards they have
+                                    Text("🂠 \(player.cardsInHand)").font(.footnote)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(player.isOnTurn ? .primary : .secondary)
+                                        .monospacedDigit()
+                                }
                             }
                         }
                     }

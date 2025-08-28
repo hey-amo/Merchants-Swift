@@ -17,8 +17,9 @@ struct GameBoardView: View {
             PlayerAvatarRowView()
             Spacer()
             
+            Text("Game phase: Setup")
             
-            
+            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.clear.ignoresSafeArea())
