@@ -10,31 +10,7 @@ import MerchantsEngine
 
 struct ShipCardView: View {
     var cubeColor: GoodsColour? = nil
-    
-    func crateImageName(for colour: GoodsColour) -> String {
-        switch colour {
-        case .white: return "crate-white"
-        case .blue: return "crate-blue"
-        case .green: return "crate-green"
-        case .yellow: return "crate-yellow"
-        case .brown: return "crate-brown"
-        case .red: return "crate-red"
         
-        }
-    }
-    
-    // Map GoodsColour to system colors
-    func systemColor(for colour: GoodsColour) -> Color {
-        switch colour {
-        case .white: return .white
-        case .blue: return .blue
-        case .red: return .red
-        case .green: return .green
-        case .yellow: return .yellow
-        case .brown: return .brown
-        }
-    }
-    
     var body: some View {
         ZStack {
             GenericCardView()

@@ -48,6 +48,30 @@ public enum GoodsColour: Int, CaseIterable {
         case .brown: return "Brown"
         }
     }
+    
+    // Map GoodsColour to an image
+    public func crateImageName(for colour: GoodsColour) -> String {
+        switch colour {
+        case .white: return "crate-white"
+        case .blue: return "crate-blue"
+        case .green: return "crate-green"
+        case .yellow: return "crate-yellow"
+        case .brown: return "crate-brown"
+        case .red: return "crate-red"
+        }
+    }
+    
+    // Map GoodsColour to system colors
+    public func systemColor(for colour: GoodsColour) -> Color {
+        switch colour {
+        case .white: return .white
+        case .blue: return .blue
+        case .red: return .red
+        case .green: return .green
+        case .yellow: return .yellow
+        case .brown: return .brown
+        }
+    }
 }
 
 public enum SpecialBuildingTypes: CaseIterable {
@@ -106,7 +130,7 @@ public enum PlayerAction: CaseIterable {
         case .exchangeCube: return "Exchange Cube"
         case .buySpecialCard: return "Buy Special Card"
         case .pass: return "Pass"
-        case .makeDelivery: return "Make Delivery"
+        case .makeDelivery: return "Make a Delivery"
         case .drawCards: return "Draw Cards"
         }
     }
@@ -206,6 +230,10 @@ public class Player: Identifiable, Equatable {
     public var ships: [Ship] = []
     public var isOnTurn: Bool = false
     public var avatar: Avatar?
+    
+    public var hand: [GoodsCard] {
+        return self.cards
+    }
     
     public var handSize: Int {
         let baseHandSize = 6
@@ -356,6 +384,8 @@ public class Marketplace {
         }
     }
     
+    // # This is wrong
+    // When we add cards, we only play cards ontop of existing cards.
     public func addCards(_ cards: [GoodsCard]) {
         marketCards.append(contentsOf: cards)
         print("Added \(cards.count) cards to marketplace. Total: \(marketCards.count)")
@@ -660,6 +690,7 @@ public class MerchantsGame: ObservableObject {
         }
         
         // Add cards to marketplace
+        // # note: cards aren't technically being added, but cards are being put on top of existing ones
         marketplace.addCards(cards)
         
         // Calculate and distribute payouts
@@ -695,7 +726,7 @@ public class MerchantsGame: ObservableObject {
     
     private func distributePayouts(for color: GoodsColour, cardCount: Int) {
         let totalCardsInMarket = marketplace.getCardCount(of: color)
-        
+                
         for player in players {
             let playerCubes = player.getGoodsCubes(of: color)
             let payout = playerCubes.count * totalCardsInMarket

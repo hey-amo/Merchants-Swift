@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4D7678CB2E5CE13C00AA17F1 /* MerchantsEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 4D7678CA2E5CE13C00AA17F1 /* MerchantsEngine */; };
+		4DA875202E618BD50016EAB4 /* Subsonic in Frameworks */ = {isa = PBXBuildFile; productRef = 4DA8751F2E618BD50016EAB4 /* Subsonic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DA875202E618BD50016EAB4 /* Subsonic in Frameworks */,
 				4D7678CB2E5CE13C00AA17F1 /* MerchantsEngine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,7 @@
 			name = Merchants;
 			packageProductDependencies = (
 				4D7678CA2E5CE13C00AA17F1 /* MerchantsEngine */,
+				4DA8751F2E618BD50016EAB4 /* Subsonic */,
 			);
 			productName = Merchants;
 			productReference = 4D7678962E5CE0AF00AA17F1 /* Merchants.app */;
@@ -203,6 +206,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4D7678C92E5CE13C00AA17F1 /* XCLocalSwiftPackageReference "../MerchantsEngine" */,
+				4DA8751E2E618BD50016EAB4 /* XCRemoteSwiftPackageReference "Subsonic" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4D7678972E5CE0AF00AA17F1 /* Products */;
@@ -608,10 +612,26 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		4DA8751E2E618BD50016EAB4 /* XCRemoteSwiftPackageReference "Subsonic" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/twostraws/Subsonic";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		4D7678CA2E5CE13C00AA17F1 /* MerchantsEngine */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MerchantsEngine;
+		};
+		4DA8751F2E618BD50016EAB4 /* Subsonic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4DA8751E2E618BD50016EAB4 /* XCRemoteSwiftPackageReference "Subsonic" */;
+			productName = Subsonic;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

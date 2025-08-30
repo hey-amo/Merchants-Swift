@@ -316,6 +316,8 @@ final class GameModelTests: XCTestCase {
         XCTAssertEqual(deck.remainingCards, 54) // 60 - 6
     }
     
+    // # This test is not right, when we add cards to the marketplace, we actually
+    // play cards over the top of existing cards in the marketplace
     func testMarketplaceAddCards() throws {
         let marketplace = Marketplace()
         let cards = [
@@ -348,6 +350,28 @@ final class GameModelTests: XCTestCase {
         
         let greenCards = marketplace.getCards(of: .green)
         XCTAssertEqual(greenCards.count, 1)
+    }
+    
+    // MARK: - Test Payouts
+    func testPayouts() throws {
+        print ("Test payouts for 3 players")
+        // fill marketplace
+        
+        let marketplace = Marketplace()
+        let cards = [
+            GoodsCard(color: .red),
+            GoodsCard(color: .blue),
+            GoodsCard(color: .red),
+            GoodsCard(color: .green),
+            GoodsCard(color: .white),
+            GoodsCard(color: .white)
+        ]
+        marketplace.addCards(cards)
+        
+        XCTAssertEqual(marketplace.getAllCards().count, 6)
+        
+        var players = game.players
+        
     }
     
     // MARK: - Game Setup Tests

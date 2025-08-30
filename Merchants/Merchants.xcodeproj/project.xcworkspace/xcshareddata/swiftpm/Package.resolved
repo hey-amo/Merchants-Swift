@@ -1,0 +1,15 @@
+{
+  "originHash" : "c3468ebc922772101da30140ddb1708556997c49e3d21f76ce14a622dd3d72ad",
+  "pins" : [
+    {
+      "identity" : "subsonic",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/twostraws/Subsonic",
+      "state" : {
+        "revision" : "156c5742279df5d2315e29534a2410f418c8a772",
+        "version" : "0.2.0"
+      }
+    }
+  ],
+  "version" : 3
+}
