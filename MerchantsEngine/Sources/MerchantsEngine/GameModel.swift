@@ -50,7 +50,7 @@ public enum GoodsColour: Int, CaseIterable {
     }
     
     // Map GoodsColour to an image
-    public func crateImageName(for colour: GoodsColour) -> String {
+    public static func crateImageName(for colour: GoodsColour) -> String {
         switch colour {
         case .white: return "crate-white"
         case .blue: return "crate-blue"
@@ -62,7 +62,7 @@ public enum GoodsColour: Int, CaseIterable {
     }
     
     // Map GoodsColour to system colors
-    public func systemColor(for colour: GoodsColour) -> Color {
+    public static func systemColor(for colour: GoodsColour) -> Color {
         switch colour {
         case .white: return .white
         case .blue: return .blue

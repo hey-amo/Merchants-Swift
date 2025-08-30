@@ -26,7 +26,7 @@ struct ShipCardView: View {
     
                ZStack {
                    if let cubeColor = cubeColor {
-                       Image(crateImageName(for:cubeColor))
+                       Image(GoodsColour.crateImageName(for:cubeColor))
                            .resizable()
                            .scaledToFit()
                            .frame(width: 32, height: 32)
