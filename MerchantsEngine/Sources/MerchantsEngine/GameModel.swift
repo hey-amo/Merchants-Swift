@@ -62,7 +62,7 @@ public enum GoodsColour: Int, CaseIterable {
     }
     
     // Map GoodsColour to system colors
-    public static func systemColor(for colour: GoodsColour) -> Color {
+    public static func mapGoodToSystemColor(for colour: GoodsColour) -> Color {
         switch colour {
         case .white: return .white
         case .blue: return .blue
@@ -100,11 +100,12 @@ public enum SpecialBuildingTypes: CaseIterable {
 
 
 public enum GameState: CaseIterable {
-    case setup, playing, gameOver
+    case setup, idle, playing, gameOver
     
     public var description: String {
         switch self {
         case .setup: return "Setup"
+        case .idle: return "Idle"
         case .playing: return "Playing"
         case .gameOver: return "Game Over"
         }
@@ -383,13 +384,20 @@ public class Marketplace {
             print("Marketplace card: \(card.color.description)")
         }
     }
-    
+
+    // When we add cards, we only play cards ontop of existing cards.
+    // replace specific cards in the marketplace at specific indexes
+    public func replaceCardsInMarketplace(cards: [GoodsCard], indexes: [Int]) {
+
+    }
+
+    /*
     // # This is wrong
     // When we add cards, we only play cards ontop of existing cards.
     public func addCards(_ cards: [GoodsCard]) {
         marketCards.append(contentsOf: cards)
         print("Added \(cards.count) cards to marketplace. Total: \(marketCards.count)")
-    }
+    }*/
     
     public func getCards(of color: GoodsColour) -> [GoodsCard] {
         return marketCards.filter { $0.color == color }
