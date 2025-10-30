@@ -5,6 +5,7 @@
 //  Created by Amarjit on 25/08/2025.
 //
 
+
 public enum SpecialBuildingTypes: CaseIterable {
     case ship, office, warehouse, forklift, crane
     
@@ -26,5 +27,20 @@ public enum SpecialBuildingTypes: CaseIterable {
         case .forklift: return "Forklift"
         case .crane: return "Crane"
         }
+    }
+}
+
+public struct SpecialBuildingCard: Identifiable, Equatable, Hashable {
+    public let id = UUID()
+    public let buildingType: SpecialBuildingTypes
+    public let name: String
+    public let action: String
+    public let cost: Int
+    
+    public init(buildingType: SpecialBuildingTypes) {
+        self.buildingType = buildingType
+        self.name = buildingType.description
+        self.action = buildingType.description
+        self.cost = buildingType.cost
     }
 }

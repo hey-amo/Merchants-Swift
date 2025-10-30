@@ -56,20 +56,6 @@ public struct Ship: Identifiable, Equatable, Hashable {
     }
 }
 
-public struct SpecialBuildingCard: Identifiable, Equatable, Hashable {
-    public let id = UUID()
-    public let buildingType: SpecialBuildingTypes
-    public let name: String
-    public let action: String
-    public let cost: Int
-    
-    public init(buildingType: SpecialBuildingTypes) {
-        self.buildingType = buildingType
-        self.name = buildingType.description
-        self.action = buildingType.description
-        self.cost = buildingType.cost
-    }
-}
 
 
 // MARK: - Player Class
