@@ -20,7 +20,12 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "MerchantsEngine"),
+            name: "MerchantsEngine",
+            // Link against the UIKit framework so package code can import/use UIKit
+            linkerSettings: [
+                .linkedFramework("UIKit")
+            ]
+        ),
         .testTarget(
             name: "MerchantsEngineTests",
             dependencies: ["MerchantsEngine"]

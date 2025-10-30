@@ -8,97 +8,8 @@ import Foundation
 import GameplayKit
 import SwiftUI
 
-// MARK: - Enums and Constants
 
-public enum Avatar: String, CaseIterable {
-    case playerBlue = "player-blue"
-    case playerRed = "player-red"
-    case playerGreen = "player-green"
-    case playerYellow = "player-yellow"
-    
-    // Computed property to get the UIImage
-    public var image: UIImage? {
-        return UIImage(named: self.rawValue)
-    }
-    
-    // For SwiftUI
-    public var imageName: String {
-        return self.rawValue
-    }
-    
-    public var colour: String {
-        switch self {
-        case .playerRed: return "Red"
-        case .playerBlue: return "Blue"
-        case .playerYellow: return "Yellow"
-        case .playerGreen: return "Green"
-        }
-    }
-}
-public enum GoodsColour: Int, CaseIterable {
-    case white = 0, blue = 1, red = 2, green = 3, yellow = 4, brown = 5
-    
-    public var description: String {
-        switch self {
-        case .white: return "White"
-        case .blue: return "Blue"
-        case .red: return "Red"
-        case .green: return "Green"
-        case .yellow: return "Yellow"
-        case .brown: return "Brown"
-        }
-    }
-    
-    // Map GoodsColour to an image
-    public static func crateImageName(for colour: GoodsColour) -> String {
-        switch colour {
-        case .white: return "crate-white"
-        case .blue: return "crate-blue"
-        case .green: return "crate-green"
-        case .yellow: return "crate-yellow"
-        case .brown: return "crate-brown"
-        case .red: return "crate-red"
-        }
-    }
-    
-    // Map GoodsColour to system colors
-    public static func mapGoodToSystemColor(for colour: GoodsColour) -> Color {
-        switch colour {
-        case .white: return .white
-        case .blue: return .blue
-        case .red: return .red
-        case .green: return .green
-        case .yellow: return .yellow
-        case .brown: return .brown
-        }
-    }
-}
-
-public enum SpecialBuildingTypes: CaseIterable {
-    case ship, office, warehouse, forklift, crane
-    
-    public var cost: Int {
-        switch self {
-        case .ship: return 10
-        case .office: return 8
-        case .warehouse: return 15
-        case .forklift: return 15
-        case .crane: return 12
-        }
-    }
-    
-    public var description: String {
-        switch self {
-        case .ship: return "Ship"
-        case .office: return "Office"
-        case .warehouse: return "Warehouse"
-        case .forklift: return "Forklift"
-        case .crane: return "Crane"
-        }
-    }
-}
-
-
+// MARK: Game State
 public enum GameState: CaseIterable {
     case setup, idle, playing, gameOver
     
@@ -112,58 +23,25 @@ public enum GameState: CaseIterable {
     }
 }
 
-public enum GamePhase: CaseIterable {
-    case purchase, delivery
-    
-    public var description: String {
-        switch self {
-        case .purchase: return "Purchase"
-        case .delivery: return "Delivery"
-        }
-    }
-}
-
 public enum PlayerAction: CaseIterable {
-    case exchangeCube, buySpecialCard, pass, makeDelivery, drawCards
+    case exchangeCubes, buySpecialCard, pass, makeDelivery, drawCards
     
     public var description: String {
         switch self {
-        case .exchangeCube: return "Exchange Cube"
-        case .buySpecialCard: return "Buy Special Card"
+        case .exchangeCubes: return "Exchange Cubes"
+        case .buySpecialCard: return "Buy 1 Special Card"
         case .pass: return "Pass"
         case .makeDelivery: return "Make a Delivery"
         case .drawCards: return "Draw Cards"
         }
     }
 }
-
-// MARK: - Core Game Objects
-
-public struct GoodsCard: Identifiable, Equatable, Hashable {
-    public let id = UUID()
-    public let color: GoodsColour
-    
-    public static func == (lhs: GoodsCard, rhs: GoodsCard) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
+public enum GamePhase: Int, CaseIterable {
+    case purchase, delivery, drawCards
 }
 
-public struct GoodsCube: Identifiable, Equatable, Hashable {
-    public let id = UUID()
-    public let color: GoodsColour
-    
-    public static func == (lhs: GoodsCube, rhs: GoodsCube) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
+
+// MARK: Ship
 
 public struct Ship: Identifiable, Equatable, Hashable {
     public let id = UUID()
@@ -193,31 +71,6 @@ public struct SpecialBuildingCard: Identifiable, Equatable, Hashable {
     }
 }
 
-// MARK: - Bank Class
-
-public class Bank {
-    public init() {}
-    
-    public func canAfford(player: Player, amount: Int) -> Bool {
-        return player.coins >= amount
-    }
-    
-    public func debit(player: Player, amount: Int) -> Bool {
-        guard canAfford(player: player, amount: amount) else {
-            print("Player \(player.id) cannot afford \(amount) coins")
-            return false
-        }
-        
-        player.coins -= amount
-        print("Debited \(amount) coins from player \(player.id). New balance: \(player.coins)")
-        return true
-    }
-    
-    public func credit(player: Player, amount: Int) {
-        player.coins += amount
-        print("Credited \(amount) coins to player \(player.id). New balance: \(player.coins)")
-    }
-}
 
 // MARK: - Player Class
 
@@ -788,9 +641,4 @@ public class MerchantsGame: ObservableObject {
             (player: player, rank: index + 1, coins: player.coins)
         }
     }
-}
-
-// MARK: AI Player
-public enum AIStrategy {
-    case cubesAndCards
 }
