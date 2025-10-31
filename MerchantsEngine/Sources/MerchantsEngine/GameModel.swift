@@ -8,8 +8,30 @@ import Foundation
 import GameplayKit
 import SwiftUI
 
+// MARK: Game constants
+
+// Game rules & constants
+public enum GameRules {
+    public enum Player {
+        public static let minCount: Int = 2
+        public static let maxCount: Int = 5
+        
+        public static func isValid(count: Int) -> Bool {
+            (minCount...maxCount).contains(count)
+        }
+    }
+    
+    public enum Economy {
+        public static let startingCoins: Int = 0
+        public static let startingShips: Int = 2
+        public static let startingHandSize: Int = 3
+        public static let payoutPerCube: Int = 1
+        public static let payoutDeliveryBonusPerOffice: Int = 2
+    }
+}
 
 // MARK: Game State
+
 public enum GameState: CaseIterable {
     case setup, idle, playing, gameOver
     
@@ -22,6 +44,8 @@ public enum GameState: CaseIterable {
         }
     }
 }
+
+// MARK: Player Actions enum
 
 public enum PlayerAction: CaseIterable {
     case exchangeCubes, buySpecialCard, pass, makeDelivery, drawCards
@@ -37,12 +61,68 @@ public enum PlayerAction: CaseIterable {
     }
 }
 public enum GamePhase: Int, CaseIterable {
-    case purchase, delivery, drawCards
+    case purchase, delivery
+}
+
+// MARK: - Goods
+
+public enum GoodsColour: Int, CaseIterable {
+    case white, blue, red, green, yellow, brown
+    
+    public var description: String {
+        switch self {
+        case .white: return "White"
+        case .blue: return "Blue"
+        case .red: return "Red"
+        case .green: return "Green"
+        case .yellow: return "Yellow"
+        case .brown: return "Brown"
+        }
+    }
+    
+    // Map GoodsColour to an image
+    public static func crateImageName(for colour: GoodsColour) -> String {
+        switch colour {
+        case .white: return "crate-white"
+        case .blue: return "crate-blue"
+        case .green: return "crate-green"
+        case .yellow: return "crate-yellow"
+        case .brown: return "crate-brown"
+        case .red: return "crate-red"
+        }
+    }   
 }
 
 
-// MARK: Ship
+// MARK: Good cards
 
+public struct GoodsCard: Identifiable, Equatable, Hashable {
+    public let id = UUID()
+    public let color: GoodsColour
+    
+    public static func == (lhs: GoodsCard, rhs: GoodsCard) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+public struct GoodsCube: Identifiable, Equatable, Hashable {
+    public let id = UUID()
+    public let color: GoodsColour
+    
+    public static func == (lhs: GoodsCube, rhs: GoodsCube) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+// MARK: Ship
 public struct Ship: Identifiable, Equatable, Hashable {
     public let id = UUID()
     public var goodsCube: GoodsCube?
@@ -54,40 +134,61 @@ public struct Ship: Identifiable, Equatable, Hashable {
     public var isLoaded: Bool {
         return goodsCube != nil
     }
+
+    public mutating func setGoodsCube(_ cube: GoodsCube?) -> Ship {
+        var updatedShip = self
+        updatedShip.goodsCube = cube
+        return updatedShip
+    }
 }
-
-
 
 // MARK: - Player Class
 
-public class Player: Identifiable, Equatable {
-    public init() {}
-    
-    public let id = UUID()
+/// A player in the Merchants game
+/// A player has:
+/// - coins
+/// - goods cards (hand)
+/// - a collection of special buildings
+/// - a collection of ships 
+/// - an avatar
+/// - isOnTurn flag
+/// - isAI flag
+/// - hand size (Int) - base 6 + 2 per warehouse
+
+public class Player: Identifiable, Hashable, Equatable {
+    public let id: UUID = UUID()
     public var coins: Int = 0
     public var cards: [GoodsCard] = []
     public var specialBuildings: [SpecialBuildingCard] = []
     public var ships: [Ship] = []
     public var isOnTurn: Bool = false
     public var avatar: Avatar?
-    
+    public var isAI: Bool = false 
+
     public var hand: [GoodsCard] {
         return self.cards
     }
-    
+
+    /// Warehouse benefit: Hand size: base: 6 + 2 per warehouse
     public var handSize: Int {
         let baseHandSize = 6
         let warehouseBonus = specialBuildings.filter { $0.buildingType == .warehouse }.count * 2
         return baseHandSize + warehouseBonus
     }
-    
+
+    /// Max ships: 2
     public var maxShips: Int {
-        let baseShips = 2
-        let shipBonus = specialBuildings.filter { $0.buildingType == .ship }.count
-        return baseShips + shipBonus
+        let baseShips = 4
+        //let shipBonus = specialBuildings.filter { $0.buildingType == .ship }.count
+        return baseShips //+ shipBonus
     }
-    
-    public var canExchangeExtraCube: Bool {
+
+    /// Get all good cubes the player has
+    public func getGoodsCubes() -> [GoodsCube] {
+        return ships.compactMap { $0.goodsCube }
+    }    
+
+    public var hasCrane: Bool {
         return specialBuildings.contains { $0.buildingType == .crane }
     }
     
@@ -95,67 +196,118 @@ public class Player: Identifiable, Equatable {
         return specialBuildings.filter { $0.buildingType == .office }.count * 2
     }
     
-    public var drawBonus: Int {
+    public var drawCardBonus: Int {
         return specialBuildings.filter { $0.buildingType == .forklift }.count
     }
-    
-    public func addCard(_ card: GoodsCard) {
+
+    public func addGoodsCard(_ card: GoodsCard) {
+        // Check hand limit
+        let handLimit: Int = handSize
+        guard cards.count < handLimit else {
+            print("Player \(id) cannot add more cards, hand limit reached")
+            return
+        }
+
         cards.append(card)
     }
+
+    // MARK: Equatable & Hashable
+ 
+    public static func == (left: Player, right: Player) -> Bool {
+        return left.id == right.id
+    }
     
-    public func removeCard(_ card: GoodsCard) -> Bool {
-        if let index = cards.firstIndex(of: card) {
-            cards.remove(at: index)
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+// MARK: Ship handler
+public class ShipHandler {
+    public func addShip(to player: Player) {
+        // this needs to be regulate by the special building handler
+        let newShip = Ship()
+        player.ships.append(newShip)
+    }
+    
+    public func loadShip(_ ship: Ship, with cube: GoodsCube, for player: Player) -> Bool {
+        guard let shipIndex = player.ships.firstIndex(of: ship) else { return false }
+        guard player.ships[shipIndex].isEmpty else { return false }
+        
+        player.ships[shipIndex].goodsCube = cube
+        return true
+    }
+    
+    public func unloadShip(_ ship: Ship, for player: Player) -> GoodsCube? {
+        guard let shipIndex = player.ships.firstIndex(of: ship) else { return nil }
+        let cube = player.ships[shipIndex].goodsCube
+        player.ships[shipIndex].goodsCube = nil
+        return cube
+    }
+}
+
+// MARK: Special buildings handler
+
+public class SpecialBuildingHandler {
+    
+    public func addSpecialBuilding(to player: Player, building: SpecialBuildingCard) {
+        // count how many special buildings of this type the player has
+        let existingCount = player.specialBuildings.filter { $0.buildingType == building.buildingType }.count
+        // get max count allowed for this building type
+        let maxCount = SpecialBuildingTypes.maxCount(for: building.buildingType)
+        
+        guard existingCount < maxCount else {
+            print("Player \(player.id) cannot add more \(building.buildingType.description)s")
+            return
+        }
+
+        player.specialBuildings.append(building)
+    }
+}
+
+// MARK: Goods card handler
+
+public class GoodsCardHandler {
+    public func addGoodsCard(to player: Player, card: GoodsCard) {
+        player.cards.append(card)
+    }
+
+    public func popGoodsCard(from player: Player, card: GoodsCard) -> Bool {
+        if let index = player.cards.firstIndex(of: card) {
+            player.cards.remove(at: index)
             return true
         }
         return false
     }
-    
-    public func addSpecialBuilding(_ building: SpecialBuildingCard) {
-        specialBuildings.append(building)
-    }
-    
-    public func addShip(_ ship: Ship) {
-        ships.append(ship)
-    }
-    
-    public func loadShip(_ ship: Ship, with cube: GoodsCube) -> Bool {
-        guard let shipIndex = ships.firstIndex(of: ship) else { return false }
-        guard ships[shipIndex].isEmpty else { return false }
-        
-        ships[shipIndex].goodsCube = cube
-        return true
-    }
-    
-    public func unloadShip(_ ship: Ship) -> GoodsCube? {
-        guard let shipIndex = ships.firstIndex(of: ship) else { return nil }
-        let cube = ships[shipIndex].goodsCube
-        ships[shipIndex].goodsCube = nil
-        return cube
-    }
-    
-    public func getGoodsCubes() -> [GoodsCube] {
-        return ships.compactMap { $0.goodsCube }
-    }
-    
-    public func getGoodsCubes(of color: GoodsColour) -> [GoodsCube] {
-        return getGoodsCubes().filter { $0.color == color }
-    }
-    
-    // MARK: - Equatable
-    
-    public static func == (lhs: Player, rhs: Player) -> Bool {
-        return lhs.id == rhs.id
+
+    public func popGoodsCardAtIndex(from player: Player, index: Int) -> GoodsCard? {
+        guard index >= 0 && index < player.cards.count else {
+            return nil
+        }
+        return player.cards.remove(at: index)
+    }   
+
+    public func popGoodsCardMatchingID(from player: Player, cardID: UUID) -> GoodsCard? {
+        if let index = player.cards.firstIndex(where: { $0.id == cardID }) {
+            return player.cards.remove(at: index)
+        }
+        return nil
     }
 }
 
-// MARK: - Deck Class
+
+// MARK: - Deck class
 
 public class Deck {
     private var cards: [GoodsCard] = []
     
     public init() {
         createDeck()
+    }
+
+    deinit {
+        print("Deck deinitialized")
+        self.cards.removeAll())
     }
     
     private func createDeck() {
@@ -204,6 +356,7 @@ public class Deck {
     }
 }
 
+
 // MARK: - Marketplace Class
 
 public class Marketplace {
@@ -214,7 +367,7 @@ public class Marketplace {
     public func setupMarketplace(from deck: Deck) {
         marketCards.removeAll()
         
-        // Draw 6 cards to create 2x3 marketplace
+        // Draw 6 cards to create a fixed 2x3 marketplace of cards
         let drawnCards = deck.drawCards(6)
         marketCards = drawnCards
         
@@ -224,20 +377,26 @@ public class Marketplace {
         }
     }
 
-    // When we add cards, we only play cards ontop of existing cards.
-    // replace specific cards in the marketplace at specific indexes
-    public func replaceCardsInMarketplace(cards: [GoodsCard], indexes: [Int]) {
-
+    /// # Adding cards to the marktplace:
+    /// When a player add's cards to the marketplace, we only replace 
+    /// specific cards in the marketplace at specific indexes
+    /// The marketplace is fixed to 6 cards
+    public func addCards(_ cards: [GoodsCard], at indexes: [Int]) {
+        guard cards.count == indexes.count else {
+            print("Error: Number of cards and indexes must match")
+            return
+        }
+        
+        for (i, index) in indexes.enumerated() {
+            guard index >= 0 && index < marketCards.count else {
+                print("Error: Index \(index) out of bounds")
+                continue
+            }
+            marketCards[index] = cards[i]
+            print("Replaced marketplace card at index \(index) with \(cards[i].color.description) card")
+        }
     }
 
-    /*
-    // # This is wrong
-    // When we add cards, we only play cards ontop of existing cards.
-    public func addCards(_ cards: [GoodsCard]) {
-        marketCards.append(contentsOf: cards)
-        print("Added \(cards.count) cards to marketplace. Total: \(marketCards.count)")
-    }*/
-    
     public func getCards(of color: GoodsColour) -> [GoodsCard] {
         return marketCards.filter { $0.color == color }
     }
@@ -251,83 +410,27 @@ public class Marketplace {
     }
 }
 
-// MARK: - Game Model
-
 public class MerchantsGame: ObservableObject {
-    // Game state
     @Published public var gameState: GameState = .setup
     @Published public var currentPhase: GamePhase = .purchase
-    @Published public var currentPlayerIndex: Int = 0
-    @Published public var turnNumber: Int = 1
-    
-    // Game components
-    public let deck = Deck()
-    public let marketplace = Marketplace()
-    public let bank = Bank()
+    @Published public var activePlayerIndex: Int = 0 // Player on turn
+
+    /// Game components
+    public var deck: Deck = Deck()
+    public var marketplace: Marketplace = Marketplace()
     public var players: [Player] = []
-    
-    // Game constants
-    let maxPlayers = 4
-    let startingCoins = 0
-    let startingShips = 2
-    let startingHandSize = 3
-    
-    // Supply
+
+    /// Supply of goods cubes and special building cards
     var goodsCubes: [GoodsColour: [GoodsCube]] = [:]
     var specialBuildingCards: [SpecialBuildingTypes: [SpecialBuildingCard]] = [:]
-    
+
     public init() {
         setupSupply()
     }
-    
-    // MARK: - Game Setup
-    
-    public func setupGame() {
-        print("=== Starting game setup ===")
-        
-        // Create players
-        createPlayers()
-        print("Created \(players.count) players")
-        
-        // Setup supply
-        setupSupply()
-        print("Supply setup complete")
-        
-        // Shuffle deck and prepare the marketplace with 6 cards
-        deck.shuffle()
-        marketplace.setupMarketplace(from: deck)
-        print("Deck shuffled and marketplace created")
-        
-        // Deal initial cards
-        dealInitialCards()
-        print("Initial cards dealt")
-        
-        // Setup ships and load with cubes
-        setupShips()
-        print("Ships setup and loaded with cubes")
-        
-        // Set first player
-        currentPlayerIndex = 0
-        players[currentPlayerIndex].isOnTurn = true
-        print("First player set: Player \(currentPlayerIndex + 1)")
-        
-        gameState = .playing
-        print("=== Game setup complete ===")
-    }
-    
-    private func createPlayers() {
-        players.removeAll()
-        
-        for i in 0..<maxPlayers {
-            let player = Player()
-            player.coins = startingCoins
-            players.append(player)
-            print("Created Player \(i + 1) with ID: \(player.id)")
-        }
-    }
-    
+
+    // Setup the supply of cubes, special buildings, etc.
     private func setupSupply() {
-        // Create goods cubes (5 of each color)
+        /// Create goods cubes (5 of each color)
         for color in GoodsColour.allCases {
             goodsCubes[color] = []
             for _ in 0..<5 {
@@ -336,7 +439,7 @@ public class MerchantsGame: ObservableObject {
             print("Created \(goodsCubes[color]?.count ?? 0) \(color.description) cubes")
         }
         
-        // Create special building cards
+        /// Create special building cards
         for buildingType in SpecialBuildingTypes.allCases {
             specialBuildingCards[buildingType] = []
             
@@ -356,70 +459,77 @@ public class MerchantsGame: ObservableObject {
             print("Created \(specialBuildingCards[buildingType]?.count ?? 0) \(buildingType.description) cards")
         }
     }
+
+    /// Setup the game with players, initial hands, ships, and marketplace
+    public func setupGame() {
+        print("=== Starting game setup ===")
+        
+        // Create players
+        createPlayers()
+        print("Created \(players.count) players")
+        
+        // Setup supply
+        setupSupply()
+        print("Supply setup complete")
+        
+        // Shuffle deck and prepare the marketplace with 6 cards
+        deck.shuffle()
+        marketplace.setupMarketplace(from: deck)
+        print("Deck shuffled and marketplace created")
+        
+        // Deal initial cards
+        dealInitialCards()
+        print("Initial cards dealt")                
+        
+        // Set first player
+        activePlayerIndex = 0
+        players[activePlayerIndex].isOnTurn = true
+        print("First player set: Player \(activePlayerIndex + 1)")
+        
+        gameState = .playing
+        print("=== Game setup complete ===")
+    }
+
+
+    private func createPlayers() {
+        players.removeAll()
+        
+        for i: Int in 0..<GameRules.Player.maxCount {
+            let player: Player = Player()
+            player.coins = GameRules.Economy.startingCoins 
+            players.append(player)
+            print("Created Player \(i + 1) with ID: \(player.id)")
+        }
+    }
     
     private func dealInitialCards() {
-        for player in players {
-            let cards = deck.drawCards(startingHandSize)
+        for player: Player in players {
+            let cards: [GoodsCard] = deck.drawCards(GameRules.Economy.startingHandSize)
             for card in cards {
-                player.addCard(card)
+                player.addGoodsCard(card)
             }
             print("Dealt \(cards.count) cards to player \(player.id)")
         }
     }
     
-    private func setupShips() {
-        for player in players {
-            // Give each player 2 ships
-            for _ in 0..<startingShips {
-                player.addShip(Ship())
-            }
-            
-            // Load ships with cubes using snake draft
-            loadShipsWithSnakeDraft(for: player)
-        }
-    }
-    
-    private func loadShipsWithSnakeDraft(for player: Player) {
-        // Snake draft: last player picks first, then clockwise, then reverse
-        let playerIndex = players.firstIndex(of: player) ?? 0
-        
-        print ("player index: \(playerIndex)")
-        
-        // For now, just load with random cubes (simplified)
-        let availableColors = GoodsColour.allCases
-        for ship in player.ships {
-            if let randomColor = availableColors.randomElement(),
-               let cube = goodsCubes[randomColor]?.popLast() {
-                let _ = player.loadShip(ship, with: cube)
-                print("Loaded \(randomColor.description) cube onto ship for player \(player.id)")
-            }
-        }
-    }
-    
-    // MARK: - Game Flow
-    
     public func nextTurn() {
         // End current player's turn
-        players[currentPlayerIndex].isOnTurn = false
+        players[activePlayerIndex].isOnTurn = false
         
         // Move to next player
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.count
-        
-        // If we've completed a full round, increment turn number
-        if currentPlayerIndex == 0 {
-            turnNumber += 1
-        }
+        activePlayerIndex = (activePlayerIndex + 1) % players.count
         
         // Set new current player
-        players[currentPlayerIndex].isOnTurn = true
+        players[activePlayerIndex].isOnTurn = true
         
         // Reset phase
         currentPhase = .purchase
         
-        print("Turn \(turnNumber), Player \(currentPlayerIndex + 1) is now active")
+        print("Player \(activePlayerIndex + 1) is now active")
         
         // Check for game end
         if deck.isEmpty {
+            print ("Deck is empty, ending game")
             endGame()
         }
     }
@@ -433,160 +543,7 @@ public class MerchantsGame: ObservableObject {
             nextTurn()
         }
     }
-    
-    // MARK: - Game Actions
-    
-    public func exchangeCube(player: Player, ship: Ship, newColor: GoodsColour) -> Bool {
-        guard currentPhase == .purchase else {
-            print("Cannot exchange cube during delivery phase")
-            return false
-        }
-        
-        guard let cube = player.unloadShip(ship) else {
-            print("Ship is empty, cannot exchange")
-            return false
-        }
-        
-        guard let newCube = goodsCubes[newColor]?.popLast() else {
-            print("No \(newColor.description) cubes available")
-            // Put the original cube back
-            let _ =  player.loadShip(ship, with: cube)
-            return false
-        }
-        
-        // Return original cube to supply
-        goodsCubes[cube.color]?.append(cube)
-        
-        // Load new cube
-        let _ = player.loadShip(ship, with: newCube)
-        
-        print("Player \(player.id) exchanged \(cube.color.description) cube for \(newColor.description) cube")
-        return true
-    }
-    
-    public func buySpecialCard(player: Player, buildingType: SpecialBuildingTypes) -> Bool {
-        guard currentPhase == .purchase else {
-            print("Cannot buy special card during delivery phase")
-            return false
-        }
-        
-        guard var availableCards = specialBuildingCards[buildingType], !availableCards.isEmpty else {
-            print("No \(buildingType.description) cards available")
-            return false
-        }
-        
-        let cost = buildingType.cost
-        
-        guard bank.canAfford(player: player, amount: cost) else {
-            print("Player \(player.id) cannot afford \(buildingType.description)")
-            return false
-        }
-        
-        // Process purchase
-        let card = availableCards.removeFirst()
-        specialBuildingCards[buildingType] = availableCards
-        
-        let _ = bank.debit(player: player, amount: cost)
-        player.addSpecialBuilding(card)
-        
-        print("Player \(player.id) bought \(buildingType.description) for \(cost) coins")
-        
-        // If it's a ship, immediately load it with a cube
-        if buildingType == .ship {
-            if let randomColor = GoodsColour.allCases.randomElement(),
-               let cube = goodsCubes[randomColor]?.popLast() {
-                let newShip = Ship()
-                player.addShip(newShip)
-                let _ = player.loadShip(newShip, with: cube)
-                print("New ship loaded with \(randomColor.description) cube")
-            }
-        }
-        
-        return true
-    }
-    
-    public func makeDelivery(player: Player, cards: [GoodsCard]) -> Bool {
-        guard currentPhase == .delivery else {
-            print("Cannot make delivery during purchase phase")
-            return false
-        }
-        
-        guard !cards.isEmpty else {
-            print("Cannot make delivery with no cards")
-            return false
-        }
-        
-        // Check all cards are same color
-        let firstColor = cards.first?.color
-        guard cards.allSatisfy({ $0.color == firstColor }) else {
-            print("All delivery cards must be the same color")
-            return false
-        }
-        
-        // Check player has these cards
-        for card in cards {
-            guard player.cards.contains(card) else {
-                print("Player does not have card \(card.id)")
-                return false
-            }
-        }
-        
-        // Remove cards from player's hand
-        for card in cards {
-            let _ = player.removeCard(card)
-        }
-        
-        // Add cards to marketplace
-        // # note: cards aren't technically being added, but cards are being put on top of existing ones
-        marketplace.addCards(cards)
-        
-        // Calculate and distribute payouts
-        let color = firstColor!
-        let cardCount = cards.count
-        distributePayouts(for: color, cardCount: cardCount)
-        
-        print("Player \(player.id) delivered \(cardCount) \(color.description) cards")
-        
-        return true
-    }
-    
-    public func drawCards(player: Player) -> Bool {
-        guard currentPhase == .delivery else {
-            print("Cannot draw cards during purchase phase")
-            return false
-        }
-        
-        let baseDrawCount = 2
-        let bonusDrawCount = player.drawBonus
-        let totalDrawCount = baseDrawCount + bonusDrawCount
-        
-        let drawnCards = deck.drawCards(totalDrawCount)
-        
-        for card in drawnCards {
-            player.addCard(card)
-        }
-        
-        print("Player \(player.id) drew \(drawnCards.count) cards (base: \(baseDrawCount), bonus: \(bonusDrawCount))")
-        
-        return true
-    }
-    
-    private func distributePayouts(for color: GoodsColour, cardCount: Int) {
-        let totalCardsInMarket = marketplace.getCardCount(of: color)
-                
-        for player in players {
-            let playerCubes = player.getGoodsCubes(of: color)
-            let payout = playerCubes.count * totalCardsInMarket
-            
-            if payout > 0 {
-                bank.credit(player: player, amount: payout)
-                print("Player \(player.id) gets \(payout) coins for \(playerCubes.count) \(color.description) cubes")
-            }
-        }
-    }
-    
-    // MARK: - Game End
-    
+
     private func endGame() {
         gameState = .gameOver
         print("=== Game Over ===")
@@ -606,15 +563,9 @@ public class MerchantsGame: ObservableObject {
     private func getWinner() -> Player {
         return players.max { $0.coins < $1.coins } ?? players[0]
     }
-    
-    // MARK: - Game State Queries
-    
-    public var isGameOver: Bool {
-        return gameState == .gameOver
-    }
-    
+
     public var currentPlayer: Player {
-        return players[currentPlayerIndex]
+        return players[activePlayerIndex]
     }
     
     public var canEndGame: Bool {
@@ -627,4 +578,52 @@ public class MerchantsGame: ObservableObject {
             (player: player, rank: index + 1, coins: player.coins)
         }
     }
+    
 }
+
+/// On their turn, a player can:
+/// - `PURCHASE PHASE`:
+///     - Exchange a cube on a ship for another color
+///     -  Buy a special building card
+///     - Pass (Only during Phase: Purchase)
+/// - `DELIVERY PHASE`:
+///     - Make a delivery
+///     - Draw cards
+//
+public class GameActionHandler {
+    private var game: MerchantsGame
+    private var phase: GamePhase {
+        return game.currentPhase
+    }
+    
+    public init(game: MerchantsGame) {
+        self.game = game
+    }
+
+    public func handleAction(player: Player, action: PlayerAction) -> Bool {
+        switch action {
+        case .exchangeCubes:
+            // Implement exchange cubes logic
+            return true
+        case .buySpecialCard:
+            // Implement buy special card logic
+            return true
+        case .pass:
+            // Implement pass logic
+            return true
+        case .makeDelivery:
+            // Implement make delivery logic
+            return true
+        case .drawCards:
+            // Implement draw cards logic
+            return true
+        }
+    }
+
+
+    // #TODO
+    public func makePayouts() {
+
+    }
+}
+
