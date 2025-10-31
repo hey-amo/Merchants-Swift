@@ -11,21 +11,31 @@ import CoreData
 
 struct MainMenuView: View {
     var body: some View {
-        VStack(spacing: 30) {
-            Text("Merchants")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            Button("Play") {
-                // Do something
-            }
-            
-            Button("Continue") {
-                // Do something
+        
+        ScrollView {
+            VStack(spacing: 20) {
+                
+                Image("ship-blueBG")
+                    .resizable()
+                    .frame(width: 150, height: 150)
+                
+                Text("Merchants")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                
+                Button("Play") {
+                    // Do something
+                }
+                
+                Button("Continue") {
+                    // Do something
+                }
             }
         }
+        
     }
 }
+
 
 #Preview {
     MainMenuView()

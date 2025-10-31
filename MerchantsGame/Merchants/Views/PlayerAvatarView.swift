@@ -7,9 +7,20 @@
 
 import SwiftUI
 
+/*
+ Player avatars:
+ - player-blue
+ - player-yellow
+ - player-red
+ - player-purple
+ - player-green
+ */
+
 struct PlayerAvatarView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Image("player-blue")
+            .resizable()
+            .frame(minWidth: 150, minHeight: 150, alignment: .center)
     }
 }
 
