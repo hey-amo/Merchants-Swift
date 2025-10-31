@@ -307,7 +307,7 @@ public class Deck {
 
     deinit {
         print("Deck deinitialized")
-        self.cards.removeAll())
+        self.cards.removeAll()
     }
     
     private func createDeck() {
