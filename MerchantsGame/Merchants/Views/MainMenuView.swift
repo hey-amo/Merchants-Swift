@@ -8,7 +8,33 @@
 import SwiftUI
 import CoreData
 
-struct ContentView: View {
+
+struct MainMenuView: View {
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("Merchants")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            
+            Button("Play") {
+                // Do something
+            }
+            
+            Button("Continue") {
+                // Do something
+            }
+        }
+    }
+}
+
+#Preview {
+    MainMenuView()
+}
+
+
+
+/*
+struct MainMenuView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
@@ -84,5 +110,6 @@ private let itemFormatter: DateFormatter = {
 }()
 
 #Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    MainMenuView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
+*/

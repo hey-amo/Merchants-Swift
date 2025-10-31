@@ -13,7 +13,7 @@ struct MerchantsApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainMenuView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
