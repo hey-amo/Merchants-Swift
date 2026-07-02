@@ -32,7 +32,7 @@ struct MerchantsApp: App {
     }*/
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainMenuView()
         }
     }
 }

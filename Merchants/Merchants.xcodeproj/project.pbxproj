@@ -32,11 +32,6 @@
 			path = MerchantsTests;
 			sourceTree = "<group>";
 		};
-		4D9CD9FB2FF296FD00B796FD /* MerchantsUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MerchantsUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +57,6 @@
 			children = (
 				4D9CD9DD2FF296FC00B796FD /* Merchants */,
 				4D9CD9F12FF296FD00B796FD /* MerchantsTests */,
-				4D9CD9FB2FF296FD00B796FD /* MerchantsUITests */,
 				4D9CD9DC2FF296FC00B796FD /* Products */,
 			);
 			sourceTree = "<group>";
