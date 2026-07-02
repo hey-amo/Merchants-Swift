@@ -9,12 +9,13 @@
 30 good cubes in 6 different colours
     - 5x White, 5x Red, 5x Green, 5x Yellow, 5x Brown
 
-22 special cards
-    - 14x ship 
-    - 2x office 
-    - 2x warehouse
-    - 2x forklift
-    - 2x crane
+Special cards:
+    The special cards you can buy aren't worth money on their own, but they can help you earn more coins:
+
+- Ship (costs 10 coins): After buying the ship, place a goods cube from the reserve on it.
+- Office (8 coins): After your second action, draw a goods card from the deck; if you have three offices, draw three cards.
+- Docker (12 coins): If you exchange goods for your first action, you can exchange one extra goods cube per docker you have.
+- Trade agreement (11 coins): If you earn coins in any player's second action, gain 2 extra coins per trade agreement you have.
 
 ## Game Preparation
 
