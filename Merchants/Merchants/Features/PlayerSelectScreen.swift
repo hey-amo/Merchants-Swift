@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct Player {
-    let id: Int
-    let avatarName: String
-    var isHuman: Bool = true
+struct PlayerSelectScreen: View {
+    var body: some View {
+        Text("Player select screen")
+    }
 }
 
+/*
 struct PlayerSelectScreen: View {
     @State private var players: [Player] = []
     @State private var selectedPlayerCount: Int = 3
@@ -189,7 +190,8 @@ struct PlayerCard: View {
         .cornerRadius(16)
     }
 }
-
+*/
 #Preview {
     PlayerSelectScreen()
 }
+
