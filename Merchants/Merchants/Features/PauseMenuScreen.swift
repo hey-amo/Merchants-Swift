@@ -7,16 +7,18 @@
 
 import SwiftUI
 
-struct AudioSettings: Codable {
-    var musicVolume: Double = 0.7
-    var soundVolume: Double = 0.8
-    
-    init(musicVolume: Double = 0.7, soundVolume: Double = 0.8) {
-        self.musicVolume = max(0, min(1, musicVolume))
-        self.soundVolume = max(0, min(1, soundVolume))
+struct PauseMenuScreen: View {
+    var body: some View {
+        Text("Pause screen")
     }
 }
 
+
+#Preview {
+    PauseMenuScreen()
+}
+
+/*
 struct PauseMenuScreen: View {
     @State private var audioSettings = AudioSettings()
     var onContinue: () -> Void
@@ -151,3 +153,4 @@ struct PauseMenuScreen: View {
         onQuit: { print("Quit") }
     )
 }
+*/
