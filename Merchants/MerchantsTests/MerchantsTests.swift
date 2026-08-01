@@ -44,9 +44,9 @@ final class MerchantsTests: XCTestCase {
 
         game.newGame(players: dummyPlayers)
 
-        XCTAssertEqual(game.drawPile.count, CardConstants.totalGoodCards - (dummyPlayers.count * 3) - 6)
-        XCTAssertEqual(game.cubePile.count, 30)
-        XCTAssertEqual(game.marketplace.count, 6)
+        XCTAssertEqual(game.drawPile.count, CardConstants.totalGoodCards - (dummyPlayers.count * 3) - CardConstants.marketplaceSize)
+        XCTAssertEqual(game.cubePile.count, CardConstants.cubeCount)
+        XCTAssertEqual(game.marketplace.count, CardConstants.marketplaceSize)
     }
 
     func testBuildingDefinitionsCreateExpectedDeck() throws {

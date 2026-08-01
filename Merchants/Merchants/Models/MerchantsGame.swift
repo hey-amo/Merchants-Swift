@@ -140,6 +140,8 @@ class MerchantsGame {
     var marketplace: [CubeColour] = [] // cards marketplace is always 6 cards, filled in setup
     var players: [Player]
     var currentPlayerIndex: Int = 0
+    var firstPlayerIndex: Int = 0
+    var currentTurnPhase: TurnPhase = .phase1
     
     //var gameMessageHandler: GameMessageHandling = GameMessageHandler()
     
@@ -163,7 +165,7 @@ class MerchantsGame {
         resetPlayersForNewGame()
         dealInitialHands()
         assignStartingShips()
-        fillMarketplace(with: 6)
+        fillMarketplace(with: CardConstants.marketplaceSize)
     }
 
     private func makeDefaultGameSetup() -> GameSetup {
