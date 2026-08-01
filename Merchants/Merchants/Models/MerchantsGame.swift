@@ -7,8 +7,12 @@
 import GameplayKit
 import Foundation
 
-enum State: Int, CaseIterable, Codable {
-    case idle, busy, thinking, action
+enum GameState: Int, CaseIterable, Codable {
+    case setup, playerSelect, paused, phase1, phase2, gameOver
+}
+
+enum PlayerState: Int, CaseIterable, Codable {
+    case idle, busy, thinking, done
 }
 
 struct TurnPhase: Equatable, Codable {
@@ -61,6 +65,20 @@ extension TurnPhase {
      - 2x warehouse (10 coins) - allows a player to take 1 more card in phase 1
 */
 
+// Quick reference to card counts
+struct CardConstants {
+    public static let totalGoodCards = 60
+    public static let cardCountPerColor = 10
+    public static let cubeCount = 30
+    public static let cubeCountPerColor = 5
+    // building card count
+    public static let shipCardsCount = 10
+    public static let largesShipCardsCount = 4
+    public static let officeCardsCount = 2
+    public static let craneCardsCount = 2
+    public static let warehouseCardsCount = 2
+}
+
 enum CubeColour: Int, CaseIterable, Codable {
     case white, blue, red, green, yellow, brown
 }
@@ -94,11 +112,11 @@ struct BuildingDefinition: Equatable, Codable {
 extension BuildingDefinition {
     static func makeDeck() -> [BuildingDefinition] {
         [
-            BuildingDefinition(name: "Ship", details: "Each ship can hold 1 goods cube. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 10, cubeCapacity: 1, cubeSlots: [], quantity: 10),
-            BuildingDefinition(name: "Large Ship", details: "Each ship can hold 2 goods cubes. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 25, cubeCapacity: 2, cubeSlots: [], quantity: 4),
-            BuildingDefinition(name: "Office", details: "Generates 1 additional coin when you deliver good cards.", cost: 8, quantity: 2),
-            BuildingDefinition(name: "Crane", details: "Allows a player to exchange 1 extra goods cube during Phase 1.", cost: 12, quantity: 2),
-            BuildingDefinition(name: "Warehouse", details: "Allows a player to draw 1 additional card during Phase 1.", cost: 10, quantity: 2)
+            BuildingDefinition(name: "Ship", details: "Each ship can hold 1 goods cube. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 10, cubeCapacity: 1, cubeSlots: [], quantity: CardConstants.shipCardsCount),
+            BuildingDefinition(name: "Large Ship", details: "Each ship can hold 2 goods cubes. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 25, cubeCapacity: 2, cubeSlots: [], quantity: CardConstants.largesShipCardsCount),
+            BuildingDefinition(name: "Office", details: "Generates 1 additional coin when you deliver good cards.", cost: 8, quantity: CardConstants.officeCardsCount),
+            BuildingDefinition(name: "Crane", details: "Allows a player to exchange 1 extra goods cube during Phase 1.", cost: 12, quantity: CardConstants.craneCardsCount),
+            BuildingDefinition(name: "Warehouse", details: "Allows a player to draw 1 additional card during Phase 1.", cost: 10, quantity: CardConstants.warehouseCardsCount)
         ].flatMap { definition in
             Array(repeating: definition, count: definition.quantity)
         }
@@ -107,11 +125,11 @@ extension BuildingDefinition {
 
 // Main game model
 class MerchantsGame {
-    var currentState: State = .idle
+    var currentState: GameState = .setup
     var buildings: [BuildingDefinition] = []
-    var drawPile: [CubeColour]
-    var cubePile: [CubeColour]
-    var marketplace: [CubeColour] = [] // cards delivered to the marketplace 6 cards max
+    var drawPile: [CubeColour] // draw pile of good cards
+    var cubePile: [CubeColour] // draw pile of cubes
+    var marketplace: [CubeColour] = [] // cards marketplace is always 6 cards, filled in setup
     var players: [Player]
     var currentPlayerIndex: Int = 0
     
@@ -126,26 +144,30 @@ class MerchantsGame {
     }
 
     func newGame(players: [Player]) {
+        guard players.count > 0 else { print ("Not enough players"); return }
         self.players = players
         self.drawPile = CubeColour.makePile(count: 10)
         self.drawPile.shuffle()
         self.cubePile = CubeColour.makePile(count: 5)
         self.marketplace = [] // marketplace starts empty
+        
         // reset players' hands and cubes and coins
         for player in self.players {
             player.hand = []
             player.cubes = []
             player.coins = 0
         }
-        // draw 3 cards for each player from drawPile
+                
+        // draw 3 good cards for each player from drawPile
         for player in self.players {
             let cardsToDraw = min(3, drawPile.count)
             let drawnCards = drawPile.prefix(cardsToDraw)
             player.hand.append(contentsOf: drawnCards)
             drawPile.removeFirst(cardsToDraw)
         }
+        
         // give each player 2 ship cards (they cannot be large ships)
-        // they are empty ships, because we do a snake draft
+        // they are empty ships, because we do a snake draft in the setup
         for player in self.players {
             let shipCards = buildings.filter { $0.name == "Ship" }.prefix(2)
             // remove the ship cards from the buildings pile
@@ -156,10 +178,16 @@ class MerchantsGame {
                 player.tableau.append(ship)
             }            
         }
+        
+        // TODO: Move this into a function
         // fill the marketplace with 6 cards from the drawPile
         let cardsToDrawForMarketplace = min(6, drawPile.count)
         let drawnCardsForMarketplace = drawPile.prefix(cardsToDrawForMarketplace)
         marketplace.append(contentsOf: drawnCardsForMarketplace)
         drawPile.removeFirst(cardsToDrawForMarketplace)
+    }
+    
+    private func fillMarketplace() {
+        
     }
 }

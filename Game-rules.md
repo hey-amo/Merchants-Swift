@@ -28,7 +28,7 @@ Special cards:
 
 ### Prepare the ships
 
-Prior to game start, each player will now load their ship with 1 cube each.
+Prior to game start, each player will now pick 1 cube to load each of their ships.
 
 Cubes are drafted using a snake order.
 
@@ -47,6 +47,8 @@ After a player has taken a turn, play continues clockwise from the First player.
 ## Game play
 
 There are 2 phases, that must be done in sequence.
+
+Each player does each phase before moving to the next phase.
 
 ### Phase 1: Purchase
 
@@ -68,6 +70,7 @@ Note: A player may not make a delivery and draw 2 goods cards, they must choose.
 --
 
 ### Exchanging goods cube
+
 A player may exchange the goods cube from ONE of his ships with a different colour, from supply, if its available.
 
 ### Buy a special card

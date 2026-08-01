@@ -6,6 +6,7 @@
 //
 
 import XCTest
+@testable import Merchants
 
 final class MerchantsTests: XCTestCase {
 
@@ -17,10 +18,15 @@ final class MerchantsTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testNewGameCreatesExpectedGoodsCardsAndCubes() throws {
+    func testNewGameCreation() throws {
         let game = MerchantsGame(buildings: [], drawPile: [], cubePile: [], players: [])
 
-        game.newGame(players: [Player(playerId: 1, coins: 0)])
+        let dummyPlayers: [Player] = [
+            Player(playerId: 1, coins: 0),
+            Player(playerId: 2, coins: 0)
+        ]
+        
+        game.newGame(players: dummyPlayers)
 
         XCTAssertEqual(game.drawPile.count, 60) // expect 60 good cards
         XCTAssertEqual(game.cubePile.count, 30) // expect 30 good cubes
@@ -41,10 +47,11 @@ final class MerchantsTests: XCTestCase {
         let deck = BuildingDefinition.makeDeck()
 
         XCTAssertEqual(deck.count, 20)
-        XCTAssertEqual(deck.filter { $0.definition.name == "Ship" }.count, 14)
-        XCTAssertEqual(deck.filter { $0.definition.name == "Office" }.count, 2)
-        XCTAssertEqual(deck.filter { $0.definition.name == "Crane" }.count, 2)
-        XCTAssertEqual(deck.filter { $0.definition.name == "Warehouse" }.count, 2)
+        XCTAssertEqual(deck.filter { $0.name == "Ship" }.count, CardConstants.shipCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Large Ship" }.count, CardConstants.largesShipCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Office" }.count, CardConstants.officeCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Crane" }.count, CardConstants.craneCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Warehouse" }.count, CardConstants.warehouseCardsCount)
     }
 
 }
