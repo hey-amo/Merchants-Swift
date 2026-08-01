@@ -7,6 +7,8 @@
 import GameplayKit
 import Foundation
 
+// Player is defined in a separate source file in the same module.
+
 enum GameState: Int, CaseIterable, Codable {
     case setup, playerSelect, paused, phase1, phase2, gameOver
 }
@@ -65,7 +67,7 @@ extension TurnPhase {
      - 2x warehouse (10 coins) - allows a player to take 1 more card in phase 1
 */
 
-// Quick reference to card counts
+// Quick reference to various constants
 struct CardConstants {
     public static let totalGoodCards = 60
     public static let cardCountPerColor = 10
@@ -123,6 +125,12 @@ extension BuildingDefinition {
     }
 }
 
+struct GameSetup {
+    let drawPile: [CubeColour]
+    let cubePile: [CubeColour]
+    let marketplace: [CubeColour]
+}
+
 // Main game model
 class MerchantsGame {
     var currentState: GameState = .setup
@@ -144,50 +152,63 @@ class MerchantsGame {
     }
 
     func newGame(players: [Player]) {
-        guard players.count > 0 else { print ("Not enough players"); return }
+        guard players.count > 0 else { print("Not enough players"); return }
+
         self.players = players
-        self.drawPile = CubeColour.makePile(count: 10)
-        self.drawPile.shuffle()
-        self.cubePile = CubeColour.makePile(count: 5)
-        self.marketplace = [] // marketplace starts empty
-        
-        // reset players' hands and cubes and coins
+        let setup = makeDefaultGameSetup()
+        self.drawPile = setup.drawPile
+        self.cubePile = setup.cubePile
+        self.marketplace = setup.marketplace
+
+        resetPlayersForNewGame()
+        dealInitialHands()
+        assignStartingShips()
+        fillMarketplace(with: 6)
+    }
+
+    private func makeDefaultGameSetup() -> GameSetup {
+        var drawPile = CubeColour.makePile(count: CardConstants.cardCountPerColor)
+        drawPile.shuffle()
+
+        var cubePile = CubeColour.makePile(count: CardConstants.cubeCountPerColor)
+        cubePile.shuffle()
+
+        return GameSetup(drawPile: drawPile, cubePile: cubePile, marketplace: [])
+    }
+
+    private func resetPlayersForNewGame() {
         for player in self.players {
             player.hand = []
             player.cubes = []
             player.coins = 0
         }
-                
-        // draw 3 good cards for each player from drawPile
+    }
+
+    private func dealInitialHands() {
         for player in self.players {
             let cardsToDraw = min(3, drawPile.count)
-            let drawnCards = drawPile.prefix(cardsToDraw)
+            let drawnCards = Array(drawPile.prefix(cardsToDraw))
             player.hand.append(contentsOf: drawnCards)
             drawPile.removeFirst(cardsToDraw)
         }
-        
-        // give each player 2 ship cards (they cannot be large ships)
-        // they are empty ships, because we do a snake draft in the setup
+    }
+
+    private func assignStartingShips() {
         for player in self.players {
             let shipCards = buildings.filter { $0.name == "Ship" }.prefix(2)
-            // remove the ship cards from the buildings pile
             for ship in shipCards {
                 if let index = buildings.firstIndex(of: ship) {
                     buildings.remove(at: index)
                 }
                 player.tableau.append(ship)
-            }            
+            }
         }
-        
-        // TODO: Move this into a function
-        // fill the marketplace with 6 cards from the drawPile
-        let cardsToDrawForMarketplace = min(6, drawPile.count)
-        let drawnCardsForMarketplace = drawPile.prefix(cardsToDrawForMarketplace)
-        marketplace.append(contentsOf: drawnCardsForMarketplace)
-        drawPile.removeFirst(cardsToDrawForMarketplace)
     }
-    
-    private func fillMarketplace() {
-        
+
+    private func fillMarketplace(with count: Int = 6) {
+        let cardsToDraw = min(count, drawPile.count)
+        let drawnCards = Array(drawPile.prefix(cardsToDraw))
+        marketplace.append(contentsOf: drawnCards)
+        drawPile.removeFirst(cardsToDraw)
     }
 }

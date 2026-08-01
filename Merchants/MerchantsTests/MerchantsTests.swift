@@ -25,22 +25,28 @@ final class MerchantsTests: XCTestCase {
             Player(playerId: 1, coins: 0),
             Player(playerId: 2, coins: 0)
         ]
-        
-        game.newGame(players: dummyPlayers)
 
-        XCTAssertEqual(game.drawPile.count, 60) // expect 60 good cards
-        XCTAssertEqual(game.cubePile.count, 30) // expect 30 good cubes
-        XCTAssertEqual(game.marketplace.count, 0) // expect 0 cards in marketplace
+        let setup = game.makeDefaultGameSetup()
 
-        let cardCounts = Dictionary(grouping: game.drawPile, by: { $0 })
+        XCTAssertEqual(setup.drawPile.count, CardConstants.totalGoodCards) // expect 60 good cards
+        XCTAssertEqual(setup.cubePile.count, CardConstants.cubeCount) // expect 30 good cubes
+        XCTAssertEqual(setup.marketplace.count, 0) // expect 0 cards in marketplace
+
+        let cardCounts = Dictionary(grouping: setup.drawPile, by: { $0 })
             .mapValues { $0.count }
-        let cubeCounts = Dictionary(grouping: game.cubePile, by: { $0 })
+        let cubeCounts = Dictionary(grouping: setup.cubePile, by: { $0 })
             .mapValues { $0.count }
 
         for color in CubeColour.allCases {
             XCTAssertEqual(cardCounts[color], 10) // expect 10 of each good card
             XCTAssertEqual(cubeCounts[color], 5)  // expect 5 of each good cube
         }
+
+        game.newGame(players: dummyPlayers)
+
+        XCTAssertEqual(game.drawPile.count, CardConstants.totalGoodCards - (dummyPlayers.count * 3) - 6)
+        XCTAssertEqual(game.cubePile.count, 30)
+        XCTAssertEqual(game.marketplace.count, 6)
     }
 
     func testBuildingDefinitionsCreateExpectedDeck() throws {
