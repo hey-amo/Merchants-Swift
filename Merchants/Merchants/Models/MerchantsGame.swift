@@ -143,8 +143,6 @@ class MerchantsGame {
     var firstPlayerIndex: Int = 0
     var currentTurnPhase: TurnPhase = .phase1
     
-    //var gameMessageHandler: GameMessageHandling = GameMessageHandler()
-    
     init(buildings: [BuildingDefinition], drawPile: [CubeColour], cubePile: [CubeColour], players: [Player], marketplace: [CubeColour] = []) {
         self.buildings = buildings
         self.drawPile = drawPile
