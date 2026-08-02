@@ -8,6 +8,7 @@
 import Foundation
 import GameplayKit
 
+
 class Player: NSObject, GKGameModelPlayer, Codable {
     var playerId: Int
     var coins: Int
@@ -36,7 +37,8 @@ class Player: NSObject, GKGameModelPlayer, Codable {
     }
 
     func updateHand(with cubes: [CubeColour]) {
-        guard hand.count + cubes.count <= 6 else {
+        // #TODO: Use hand manager to update
+        guard hand.count + cubes.count <= maxHandSize else {
             print("Cannot add card to hand: exceeds maximum hand size.")
             return
         }

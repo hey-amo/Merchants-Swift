@@ -67,8 +67,8 @@ extension TurnPhase {
      - 2x warehouse (10 coins) - allows a player to take 1 more card in phase 1
 */
 
-// Quick reference to various constants
-struct CardConstants {
+// In-game constants
+struct GameConstants {
     public static let totalGoodCards = 60
     public static let cardCountPerColor = 10
     public static let cubeCount = 30
@@ -79,6 +79,8 @@ struct CardConstants {
     public static let officeCardsCount = 2
     public static let craneCardsCount = 2
     public static let warehouseCardsCount = 2
+    // max hand size
+    public static let maxHandSize = 6
 }
 
 enum CubeColour: Int, CaseIterable, Codable {
@@ -114,11 +116,11 @@ struct BuildingDefinition: Equatable, Codable {
 extension BuildingDefinition {
     static func makeDeck() -> [BuildingDefinition] {
         [
-            BuildingDefinition(name: "Ship", details: "Each ship can hold 1 goods cube. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 10, cubeCapacity: 1, cubeSlots: [], quantity: CardConstants.shipCardsCount),
-            BuildingDefinition(name: "Large Ship", details: "Each ship can hold 2 goods cubes. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 25, cubeCapacity: 2, cubeSlots: [], quantity: CardConstants.largesShipCardsCount),
-            BuildingDefinition(name: "Office", details: "Generates 1 additional coin when you deliver good cards.", cost: 8, quantity: CardConstants.officeCardsCount),
-            BuildingDefinition(name: "Crane", details: "Allows a player to exchange 1 extra goods cube during Phase 1.", cost: 12, quantity: CardConstants.craneCardsCount),
-            BuildingDefinition(name: "Warehouse", details: "Allows a player to draw 1 additional card during Phase 1.", cost: 10, quantity: CardConstants.warehouseCardsCount)
+            BuildingDefinition(name: "Ship", details: "Each ship can hold 1 goods cube. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 10, cubeCapacity: 1, cubeSlots: [], quantity: GameConstants.shipCardsCount),
+            BuildingDefinition(name: "Large Ship", details: "Each ship can hold 2 goods cubes. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 25, cubeCapacity: 2, cubeSlots: [], quantity: GameConstants.largesShipCardsCount),
+            BuildingDefinition(name: "Office", details: "Generates 1 additional coin when you deliver good cards.", cost: 8, quantity: GameConstants.officeCardsCount),
+            BuildingDefinition(name: "Crane", details: "Allows a player to exchange 1 extra goods cube during Phase 1.", cost: 12, quantity: GameConstants.craneCardsCount),
+            BuildingDefinition(name: "Warehouse", details: "Allows a player to draw 1 additional card during Phase 1.", cost: 10, quantity: GameConstants.warehouseCardsCount)
         ].flatMap { definition in
             Array(repeating: definition, count: definition.quantity)
         }
@@ -163,14 +165,14 @@ class MerchantsGame {
         resetPlayersForNewGame()
         dealInitialHands()
         assignStartingShips()
-        fillMarketplace(with: CardConstants.marketplaceSize)
+        fillMarketplace(with: GameConstants.marketplaceSize)
     }
 
     private func makeDefaultGameSetup() -> GameSetup {
-        var drawPile = CubeColour.makePile(count: CardConstants.cardCountPerColor)
+        var drawPile = CubeColour.makePile(count: GameConstants.cardCountPerColor)
         drawPile.shuffle()
 
-        var cubePile = CubeColour.makePile(count: CardConstants.cubeCountPerColor)
+        var cubePile = CubeColour.makePile(count: GameConstants.cubeCountPerColor)
         cubePile.shuffle()
 
         return GameSetup(drawPile: drawPile, cubePile: cubePile, marketplace: [])
