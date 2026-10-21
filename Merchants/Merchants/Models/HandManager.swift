@@ -18,7 +18,7 @@ class HandManager {
 	private var _maxHandSize: Int 
 	public var hand: [CubeColour] {
 		get {
-			return _self.hand
+			return _hand
 		}
 	}
 
@@ -29,20 +29,17 @@ class HandManager {
 
 	// add cubes
 	func add(cubes: [CubeColour]) {
-        guard _handSize + cubes.count <= maxHandSize else {
+		guard _handSize + cubes.count <= _maxHandSize else {
             print("Cannot add card to hand: exceeds maximum hand size.")
             return
         }
-        hand.append(contentsOf: cubes)
+		_hand.append(contentsOf: cubes)
     }
 
     // remove a single cube 
 	func removeCube(atIndex: Int = 0) {
-		guard atIndex >= 0 else { return }
-		guard _hand.count > 0 else { return }
-		// do safe handling of index, compare against hand.count
-		// remove the cube, only when safely found the cube
-		// if it can't find the cube, fail
+		guard _hand.indices.contains(atIndex) else { return }
+		_hand.remove(at: atIndex)
 	}
 
 	func clearAll() {

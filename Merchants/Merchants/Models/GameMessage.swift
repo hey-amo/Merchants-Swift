@@ -41,7 +41,7 @@ public struct GameMessage: Codable, Hashable {
         self.type = messageType
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 
@@ -51,14 +51,14 @@ public struct GameMessage: Codable, Hashable {
         case type
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.message = try container.decode(String.self, forKey: .message)
         self.timestamp = try container.decode(Date.self, forKey: .timestamp)
         self.type = try container.decode(GameMessageType.self, forKey: .type)
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(message, forKey: .message)
         try container.encode(timestamp, forKey: .timestamp)

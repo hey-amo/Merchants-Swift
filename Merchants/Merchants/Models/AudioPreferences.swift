@@ -26,6 +26,11 @@ struct AudioPreferences: Codable, Hashable {
         try container.encode(soundVolume, forKey: .soundVolume)
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case musicVolume
+        case soundVolume
+    }
+
     enum Configure {
         case sound(on: Bool)
         case music(on: Bool)

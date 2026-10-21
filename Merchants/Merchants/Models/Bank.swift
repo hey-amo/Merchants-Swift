@@ -46,7 +46,7 @@ class Bank: NSObject, NSCoding {
         self.init(coder: coder)
     }
 
-    func perform(_ t: Transaction) throws {
+    func transaction(_ t: Transaction) throws {
         switch t {
         case .credit(let amount): try credit(amount)
         case .debit(let amount): try debit(amount)

@@ -19,6 +19,7 @@ class Player: NSObject, GKGameModelPlayer, Codable {
     var isAI: Bool
     var isStartPlayer: Bool = false
     var avatar: String
+    private var maxHandSize: Int = GameConstants.maxHandSize
     
     init(playerId: Int, coins: Int, hand: [CubeColour] = [], tableau: [BuildingDefinition] = [], cubes: [CubeColour] = [], isAI: Bool = false, isOnTurn: Bool = false, avatar: String = "", isStartPlayer: Bool = false) {
         self.playerId = playerId

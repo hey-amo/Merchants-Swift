@@ -80,7 +80,8 @@ struct GameConstants {
     public static let craneCardsCount = 2
     public static let warehouseCardsCount = 2
     // max hand size
-    public static let maxHandSize = 6
+    public static let maxHandSize = 5
+    public static let marketplaceSize = 6
 }
 
 enum CubeColour: Int, CaseIterable, Codable {
