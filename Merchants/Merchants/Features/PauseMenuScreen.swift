@@ -8,18 +8,6 @@
 import SwiftUI
 
 struct PauseMenuScreen: View {
-    var body: some View {
-        Text("Pause screen")
-    }
-}
-
-
-#Preview {
-    PauseMenuScreen()
-}
-
-/*
-struct PauseMenuScreen: View {
     @State private var audioSettings = AudioSettings()
     var onContinue: () -> Void
     var onQuit: () -> Void
@@ -153,4 +141,3 @@ struct PauseMenuScreen: View {
         onQuit: { print("Quit") }
     )
 }
-*/
