@@ -1,27 +1,39 @@
-// GameWinnerTests.swift
-
 import XCTest
 @testable import Merchants
 
-// create an array of 5 dummy players (Disposable result) for each test
-
 final class GameWinnerTests: XCTestCase {
 
-	override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-        // setup dummy players here
+    func testWinnerUsesSuppliedPlayersAndSortsByCoins() {
+        let players = [
+            Player(playerId: 1, coins: 10),
+            Player(playerId: 2, coins: 14),
+            Player(playerId: 3, coins: 3)
+        ]
+        let view = WinnerScreenView(players: players)
+
+        XCTAssertEqual(view.sortedPlayers.map(\.playerId), [2, 1, 3])
+        XCTAssertEqual(view.winners.map(\.playerId), [2])
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        // Remove the dummy players, nil the array
+    func testWinnerIsATie() {
+        let players = [
+            Player(playerId: 1, coins: 10),
+            Player(playerId: 2, coins: 14),
+            Player(playerId: 3, coins: 14)
+        ]
+        let view = WinnerScreenView(players: players)
+
+        XCTAssertEqual(Set(view.winners.map(\.playerId)), Set([2, 3]))
     }
 
+    func testSamplePlayersCanBeEnabledAndDisabled() {
+        let realPlayers = [Player(playerId: 6, coins: 30)]
 
-	func testWinner() throws {
+        let sampleView = WinnerScreenView(players: realPlayers, useSamplePlayers: true)
+        XCTAssertEqual(sampleView.sortedPlayers.map(\.playerId), [2, 1, 4, 3, 5])
 
-	}
-	func testWinnerIsATie() throws {
-		
-	}
+        let realPlayersView = WinnerScreenView(players: realPlayers)
+        XCTAssertEqual(realPlayersView.sortedPlayers.map(\.playerId), [6])
+        XCTAssertEqual(realPlayersView.winners.map(\.playerId), [6])
+    }
 }
