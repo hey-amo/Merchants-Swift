@@ -139,23 +139,23 @@ class MerchantsGame {
     var drawPile: [CubeColour] // draw pile of good cards
     var cubePile: [CubeColour] // draw pile of cubes
     var marketplace: [CubeColour] = [] // cards marketplace is always 6 cards, filled in setup
-    var players: [Player]
-    var currentPlayerIndex: Int = 0
-    var firstPlayerIndex: Int = 0
+    private var turnOrderManager: TurnOrderManager<Player>?
+    var players: [Player] { turnOrderManager?.allPlayers ?? [] }
+    var activePlayer: Player? { turnOrderManager?.currentPlayer }
     var currentTurnPhase: TurnPhase = .phase1
     
     init(buildings: [BuildingDefinition], drawPile: [CubeColour], cubePile: [CubeColour], players: [Player], marketplace: [CubeColour] = []) {
         self.buildings = buildings
         self.drawPile = drawPile
         self.cubePile = cubePile
-        self.players = players
+        self.turnOrderManager = players.isEmpty ? nil : TurnOrderManager(players: players)
         self.marketplace = marketplace
     }
 
     func newGame(players: [Player]) {
         guard players.count > 0 else { print("Not enough players"); return }
 
-        self.players = players
+        self.turnOrderManager = TurnOrderManager(players: players)
         let setup = makeDefaultGameSetup()
         self.drawPile = setup.drawPile
         self.cubePile = setup.cubePile
@@ -165,6 +165,11 @@ class MerchantsGame {
         dealInitialHands()
         assignStartingShips()
         fillMarketplace(with: GameConstants.marketplaceSize)
+    }
+
+    @discardableResult
+    func advanceTurn() -> Player? {
+        turnOrderManager?.advance()
     }
 
     func makeDefaultGameSetup() -> GameSetup {

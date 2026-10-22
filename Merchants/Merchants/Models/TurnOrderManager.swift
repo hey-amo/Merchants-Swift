@@ -2,7 +2,7 @@
 
 import Foundation
 
-public protocol TurnOrderPlayer: Sendable, Equatable {
+public protocol TurnOrderPlayer: Equatable {
     associatedtype ID: Hashable
     var id: ID { get }
 }
@@ -18,7 +18,7 @@ public struct TurnOrderManager<Player: TurnOrderPlayer> {
     private let direction: TurnOrderDirection
 
     public init(players: [Player], direction: TurnOrderDirection = .forward) {
-        precondition(players.count >= 2, "Turn order requires at least 2 players")
+        precondition(!players.isEmpty, "Turn order requires at least one player")
         self.players = players
         self.index = 0
         self.direction = direction
@@ -34,10 +34,6 @@ public struct TurnOrderManager<Player: TurnOrderPlayer> {
 
     public var totalPlayers: Int {
         players.count
-    }
-
-    public var currentPlayerIsTurn: Bool {
-        true
     }
 
     @discardableResult
