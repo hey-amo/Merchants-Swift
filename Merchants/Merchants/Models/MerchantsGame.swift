@@ -84,6 +84,17 @@ struct GameConstants {
 
 enum CubeColour: Int, CaseIterable, Codable {
     case white, blue, red, green, yellow, brown
+
+    func resourceImageName() -> String {
+        switch self {
+        case .white: return "crate-black"
+        case .blue: return "crate-blue"
+        case .red: return "crate-brown"
+        case .green: return "crate-green"
+        case .yellow: return "crate-red"
+        case .brown: return "crate-yellow"
+        }
+    }
 }
 
 extension CubeColour {

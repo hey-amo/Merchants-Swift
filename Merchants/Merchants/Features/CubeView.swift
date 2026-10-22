@@ -7,14 +7,23 @@
 
 import SwiftUI
 
-// Display a single cube
-
 struct CubeView: View {
+    let cubeColour: CubeColour
+    let size: CGFloat
+
+    init(cubeColour: CubeColour, size: CGFloat = 85) {
+        self.cubeColour = cubeColour
+        self.size = size
+    }
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Image(cubeColour.resourceImageName())
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
     }
 }
 
 #Preview {
-    CubeView()
+    CubeView(cubeColour: .blue)
 }

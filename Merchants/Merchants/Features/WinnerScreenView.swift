@@ -9,27 +9,13 @@ import SwiftUI
 
 struct WinnerScreenView: View {
     private let players: [Player]
-    private let useSamplePlayers: Bool
 
-    private static let samplePlayers = [
-        Player(playerId: 1, coins: 10),
-        Player(playerId: 2, coins: 14),
-        Player(playerId: 3, coins: 3),
-        Player(playerId: 4, coins: 7),
-        Player(playerId: 5, coins: 1)
-    ]
-
-    init(players: [Player], useSamplePlayers: Bool = false) {
+    init(players: [Player]) {
         self.players = players
-        self.useSamplePlayers = useSamplePlayers
     }
-
-    var displayedPlayers: [Player] {
-        useSamplePlayers ? Self.samplePlayers : players
-    }
-
+    
     var sortedPlayers: [Player] {
-        displayedPlayers.sorted { $0.coins > $1.coins }
+        players.sorted { $0.coins > $1.coins }
     }
 
     var winners: [Player] {
@@ -130,5 +116,12 @@ struct WinnerScreenView: View {
 }
 
 #Preview {
-    WinnerScreenView(players: [], useSamplePlayers: true)
+    let samplePlayers = [
+        Player(playerId: 1, coins: 10),
+        Player(playerId: 2, coins: 14),
+        Player(playerId: 3, coins: 3),
+        Player(playerId: 4, coins: 7),
+        Player(playerId: 5, coins: 1)
+    ]
+    WinnerScreenView(players: samplePlayers)
 }
