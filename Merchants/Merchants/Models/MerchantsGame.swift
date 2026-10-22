@@ -7,8 +7,6 @@
 import GameplayKit
 import Foundation
 
-// Player is defined in a separate source file in the same module.
-
 enum GameState: Int, CaseIterable, Codable {
     case setup, playerSelect, paused, phase1, phase2, gameOver
 }
@@ -169,7 +167,7 @@ class MerchantsGame {
         fillMarketplace(with: GameConstants.marketplaceSize)
     }
 
-    private func makeDefaultGameSetup() -> GameSetup {
+    func makeDefaultGameSetup() -> GameSetup {
         var drawPile = CubeColour.makePile(count: GameConstants.cardCountPerColor)
         drawPile.shuffle()
 
@@ -179,7 +177,7 @@ class MerchantsGame {
         return GameSetup(drawPile: drawPile, cubePile: cubePile, marketplace: [])
     }
 
-    private func resetPlayersForNewGame() {
+    func resetPlayersForNewGame() {
         for player in self.players {
             player.hand = []
             player.cubes = []
@@ -187,7 +185,7 @@ class MerchantsGame {
         }
     }
 
-    private func dealInitialHands() {
+    func dealInitialHands() {
         for player in self.players {
             let cardsToDraw = min(3, drawPile.count)
             let drawnCards = Array(drawPile.prefix(cardsToDraw))
@@ -196,7 +194,7 @@ class MerchantsGame {
         }
     }
 
-    private func assignStartingShips() {
+    func assignStartingShips() {
         for player in self.players {
             let shipCards = buildings.filter { $0.name == "Ship" }.prefix(2)
             for ship in shipCards {
@@ -208,7 +206,7 @@ class MerchantsGame {
         }
     }
 
-    private func fillMarketplace(with count: Int = 6) {
+    func fillMarketplace(with count: Int = 6) {
         let cardsToDraw = min(count, drawPile.count)
         let drawnCards = Array(drawPile.prefix(cardsToDraw))
         marketplace.append(contentsOf: drawnCards)

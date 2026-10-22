@@ -6,8 +6,6 @@ protocol HandManagerUpdater: AnyObject {
     func updateHand(with cubes: [CubeColour])
 }
 
-// This shouldn't care about the player
-
 class HandManager {
 	private var _hand: [CubeColour] // hand of good cards
 	private var _handSize: Int { 

@@ -34,6 +34,7 @@ class Player: NSObject, GKGameModelPlayer, Codable {
     }
 
     func updateCoins(by amount: Int = 0) {
+        // #TODO: Use bank to update
         coins += amount
     }
 

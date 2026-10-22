@@ -21,7 +21,9 @@ enum Transaction {
     case debit(Int)
 }
 
-class Bank: NSObject, NSCoding {
+class Bank: NSObject, NSCoding, NSSecureCoding {
+    static var supportsSecureCoding: Bool = true
+    
     private var _balance: Int
     public var balance: Int { _balance }
 

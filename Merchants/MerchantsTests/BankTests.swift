@@ -62,13 +62,22 @@ final class BankTests: XCTestCase {
 
     func testInitWithCoder_RoundTripsBalance() throws {
         let bank = try Bank(42)
-        let data = NSMutableData()
-        let archiver = NSKeyedArchiver(forWritingWith: data)
-        bank.encode(with: archiver)
+
+        let archiver = NSKeyedArchiver(requiringSecureCoding: true)
+        archiver.encode(bank, forKey: NSKeyedArchiveRootObjectKey)
         archiver.finishEncoding()
 
-        let unarchiver = NSKeyedUnarchiver(forReadingFrom: data as Data)
-        let decodedBank = Bank(withCoder: unarchiver)
+        let data = archiver.encodedData
+
+        let unarchiver = try NSKeyedUnarchiver(forReadingFrom: data)
+        unarchiver.requiresSecureCoding = true
+
+        let decodedBank = unarchiver.decodeObject(
+            of: Bank.self,
+            forKey: NSKeyedArchiveRootObjectKey
+        )
+        unarchiver.finishDecoding()
+
         XCTAssertEqual(decodedBank?.balance, 42)
     }
 
@@ -79,7 +88,7 @@ final class BankTests: XCTestCase {
         bank.save(with: archiver)
         archiver.finishEncoding()
 
-        let unarchiver = NSKeyedUnarchiver(forReadingFrom: data as Data)
+        let unarchiver = try NSKeyedUnarchiver(forReadingFrom: data as Data)
         let decodedBank = Bank(withCoder: unarchiver)
         XCTAssertEqual(decodedBank?.balance, 27)
     }
