@@ -52,7 +52,6 @@ extension Player: HandUpdaterDelegate {
         guard hand.count + cubes.count <= maxHandSize else {
             //print("Cannot add card to hand: exceeds maximum hand size.")
             throw HandErrorType.reachedMaxHandSize
-            return
         }
         hand.append(contentsOf: cubes)
     }
