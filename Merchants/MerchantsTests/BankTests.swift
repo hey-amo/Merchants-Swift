@@ -8,7 +8,34 @@
 import XCTest
 @testable import Merchants
 
+private final class DummyPlayer: CoinUpdaterDelegate {
+    var coins = 0
+
+    func updateCoins(amount: Int) throws {
+        coins += amount
+    }
+}
+
 final class BankTests: XCTestCase {
+
+    func testCredit_UpdatesDummyPlayerThroughProtocol() throws {
+        let bank = try Bank()
+        let player = DummyPlayer()
+
+        try bank.apply(.credit(100), to: player)
+
+        XCTAssertEqual(player.coins, 100)
+    }
+
+    func testDebit_UpdatesDummyPlayerThroughProtocol() throws {
+        let bank = try Bank()
+        let player = DummyPlayer()
+        try bank.apply(.credit(100), to: player)
+
+        try bank.apply(.debit(50), to: player)
+
+        XCTAssertEqual(player.coins, 50)
+    }
 
     func testBalance() throws {
         let expected = 100

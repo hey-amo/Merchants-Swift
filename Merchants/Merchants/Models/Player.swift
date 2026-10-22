@@ -41,8 +41,7 @@ class Player: NSObject, GKGameModelPlayer, Codable {
 }
 
 extension Player: CoinUpdaterDelegate {
-    func updateCoins(amount: Int = 0) {
-        print ("inside protocol")
+    func updateCoins(amount: Int) throws {
         self.coins += amount
     }
 }

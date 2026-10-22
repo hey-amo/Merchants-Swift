@@ -22,7 +22,7 @@ enum Transaction {
 }
 
 protocol CoinUpdaterDelegate {
-    func updateCoins(amount: Int)
+    func updateCoins(amount: Int) throws
 }
 
 class Bank {    
@@ -40,6 +40,21 @@ class Bank {
         switch t {
         case .credit(let amount): try credit(amount)
         case .debit(let amount): try debit(amount)
+        }
+    }
+
+    func apply(_ t: Transaction, to updater: CoinUpdaterDelegate) throws {
+        switch t {
+        case .credit(let amount):
+            guard amount > 0 else {
+                throw IntegerErrorType.negativeIntegerValue
+            }
+            try updater.updateCoins(amount: amount)
+        case .debit(let amount):
+            guard amount > 0 else {
+                throw IntegerErrorType.negativeIntegerValue
+            }
+            try updater.updateCoins(amount: -amount)
         }
     }
 }
