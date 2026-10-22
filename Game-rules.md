@@ -2,7 +2,11 @@
 
 ## About
 
+This is an unoffical creation of Reiner Kniza's game "Merchants"
 
+The 16th century saw a boom in sailing, exploration and sea-based trading.
+
+Players act as a 16th century merchant family and try to maximise profits through the exchange of good cubes that match good cards played to a market.
 
 ## Components
 
