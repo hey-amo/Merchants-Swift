@@ -52,11 +52,13 @@ extension TurnPhase {
 }
 
 /* 
- 60 good cards in 6 different colours (white, blue, red, green, yellow, brown)
- - 10x White, 10x Blue, 10x Red, 10x Green, 10x Yellow, 10x Brown
+ 6 different goods:
+    Sugar (White), Indigo (Blue), Spices (Red), 10x Tea (Green), 10x Silk (Purple), 10x Lumber (Brown)
+ 60 good cards
+ - 10x Sugar (White), 10x Indigo (Blue), 10x Spices (Red), 10x Tea (Green), 10x Silk (Purple), 10x Lumber (Brown)
 
- 30 good cubes in 6 different colours
-     - 5x White, 5x Blue, 5x Red, 5x Green, 5x Yellow, 5x Brown
+ 30 good cubes in the 6 different goods
+     - 5x Sugar (White), 5x Indigo (Blue), 5x Spices (Red), 5x Tea (Green), 5x Silk (Purple), 5x Lumber (Brown)
 
  16 building cards
      - 14x ship (10 coins) - each player starts with 1 ship. Each ship can carry 1 goods cube. After purchasing a ship, the player immediatley takes a goods cube and places it on the purchased ship.
@@ -82,19 +84,57 @@ struct GameConstants {
     public static let marketplaceSize = 6
 }
 
-enum CubeColour: Int, CaseIterable, Codable {
-    case white, blue, red, green, yellow, brown
+enum Good: String, CaseIterable, Codable, CustomStringConvertible {
+    case sugar, indigo, spices, tea, silk, lumber
+
+    var description: String {
+        switch self {
+        case .sugar: return "Sugar"
+        case .indigo: return "Indigo"
+        case .spices: return "Spices"
+        case .tea: return "Tea"
+        case .silk: return "Silk"
+        case .lumber: return "Lumber"
+        }
+    }
 
     func resourceImageName() -> String {
         switch self {
-        case .white: return "crate-black"
-        case .blue: return "crate-blue"
-        case .red: return "crate-brown"
-        case .green: return "crate-green"
-        case .yellow: return "crate-red"
-        case .brown: return "crate-yellow"
+        case .sugar: return "crate-white"
+        case .indigo: return "crate-blue"
+        case .spices: return "crate-red"
+        case .tea: return "crate-green"
+        case .silk: return "crate-purple"
+        case .lumber: return "crate-brown"
         }
     }
+}
+
+enum CubeColour: Int, CaseIterable, Codable {
+    case white, blue, red, green, purple, brown
+
+    func resourceImageName() -> String {
+        switch self {
+        case .white: return "crate-white"
+        case .blue: return "crate-blue"
+        case .red: return "crate-red"
+        case .green: return "crate-green"
+        case .purple: return "crate-purple"
+        case .brown: return "crate-brown"
+        }
+    }
+
+    func descriptiveName() -> String {
+        switch self {
+        case .white: return "Sugar"
+        case .blue: return "Indigo"
+        case .red: return "Spices"
+        case .green: return "Tea"
+        case .purple: return "Silk"
+        case .brown: return "Lumber"
+        }
+    }
+
 }
 
 extension CubeColour {
