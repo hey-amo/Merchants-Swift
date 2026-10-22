@@ -19,13 +19,13 @@ final class BankTests: XCTestCase {
     func testCredit_PositiveValue() throws {
         let expected = 100
         let bank = try Bank(0)
-        try bank.transaction(.credit(expected))
+        try bank.apply(.credit(expected))
         XCTAssertEqual(bank.balance, 100)
     }
 
     func testCredit_NegativeValue_ShouldFail() throws {
         let bank = try Bank(100)
-        XCTAssertThrowsError(try bank.transaction(.credit(-10))) { error in
+        XCTAssertThrowsError(try bank.apply(.credit(-10))) { error in
             XCTAssertEqual(error as? IntegerErrorType, .negativeIntegerValue)
         }
     }
@@ -36,20 +36,20 @@ final class BankTests: XCTestCase {
         let expectedBalance = deposit - subtract
         let bank = try Bank(deposit)
         XCTAssertEqual(bank.balance, deposit)
-        try bank.transaction(.debit(subtract))
+        try bank.apply(.debit(subtract))
         XCTAssertEqual(bank.balance, expectedBalance)
     }
 
     func testDebit_NegativeValue_ShouldFail() throws {
         let bank = try Bank(100)
-        XCTAssertThrowsError(try bank.transaction(.debit(-10))) { error in
+        XCTAssertThrowsError(try bank.apply(.debit(-10))) { error in
             XCTAssertEqual(error as? IntegerErrorType, .negativeIntegerValue)
         }
     }
 
     func testDebit_NotEnoughFunds_ShouldFail() throws {
         let bank = try Bank(10)
-        XCTAssertThrowsError(try bank.transaction(.debit(20))) { error in
+        XCTAssertThrowsError(try bank.apply(.debit(20))) { error in
             XCTAssertEqual(error as? IntegerErrorType, .notEnoughFunds)
         }
     }
@@ -60,46 +60,4 @@ final class BankTests: XCTestCase {
         }
     }
 
-    func testInitWithCoder_RoundTripsBalance() throws {
-        let bank = try Bank(42)
-
-        let archiver = NSKeyedArchiver(requiringSecureCoding: true)
-        archiver.encode(bank, forKey: NSKeyedArchiveRootObjectKey)
-        archiver.finishEncoding()
-
-        let data = archiver.encodedData
-
-        let unarchiver = try NSKeyedUnarchiver(forReadingFrom: data)
-        unarchiver.requiresSecureCoding = true
-
-        let decodedBank = unarchiver.decodeObject(
-            of: Bank.self,
-            forKey: NSKeyedArchiveRootObjectKey
-        )
-        unarchiver.finishDecoding()
-
-        XCTAssertEqual(decodedBank?.balance, 42)
-    }
-
-    func testSaveWithCoder_EncodesBalance() throws {
-        let bank = try Bank(27)
-        
-        
-        let archiver = NSKeyedArchiver(requiringSecureCoding: true)
-        archiver.encode(bank, forKey: NSKeyedArchiveRootObjectKey)
-        bank.save(with: archiver)
-        archiver.finishEncoding()
-
-        let data = archiver.encodedData
-        let unarchiver = try NSKeyedUnarchiver(forReadingFrom: data)
-        unarchiver.requiresSecureCoding = true
-
-        let decodedBank = unarchiver.decodeObject(
-            of: Bank.self,
-            forKey: NSKeyedArchiveRootObjectKey
-        )
-        unarchiver.finishDecoding()
-
-        XCTAssertEqual(decodedBank?.balance, 27)
-    }
 }

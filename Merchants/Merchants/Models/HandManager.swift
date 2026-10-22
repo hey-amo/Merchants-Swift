@@ -2,8 +2,22 @@
 
 import Foundation
 
-protocol HandManagerUpdater: AnyObject {
-    func updateHand(with cubes: [CubeColour])
+enum HandErrorType: Error {
+    case handIsEmpty
+    case reachedMaxHandSize
+}
+
+extension HandErrorType: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .handIsEmpty: return NSLocalizedString("Hand is empty", comment: "handIsEmpty")
+        case .reachedMaxHandSize: return NSLocalizedString("Cannot perform: exceeds maximum hand size", comment: "reachedMaxHandSize")
+        }
+    }
+}
+
+protocol HandUpdaterDelegate: AnyObject {
+    func updateHand(with cubes: [CubeColour]) throws
 }
 
 class HandManager {
@@ -26,16 +40,18 @@ class HandManager {
 	}
 
 	// add cubes
-	func add(cubes: [CubeColour]) {
+	func add(cubes: [CubeColour]) throws {
 		guard _handSize + cubes.count <= _maxHandSize else {
-            print("Cannot add card to hand: exceeds maximum hand size.")
-            return
+            //print("Cannot add card to hand: exceeds maximum hand size.")
+            //return
+            throw HandErrorType.reachedMaxHandSize
         }
 		_hand.append(contentsOf: cubes)
     }
 
     // remove a single cube 
 	func removeCube(atIndex: Int = 0) {
+        guard _hand.count > 0 else { return }
 		guard _hand.indices.contains(atIndex) else { return }
 		_hand.remove(at: atIndex)
 	}
