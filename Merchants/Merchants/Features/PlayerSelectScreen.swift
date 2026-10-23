@@ -10,12 +10,16 @@ import SwiftUI
 // Route: New game -> Select player -> Select cubes -> Play the game
 
 struct PlayerSelectScreen: View {
+    let onStartGame: () -> Void
+
     var body: some View {
-        Text("Player select screen")
+        VStack(spacing: 24) {
+            Text("Player select screen")
+            Button("Start game", action: onStartGame)
+        }
     }
 }
 
 #Preview {
-    PlayerSelectScreen()
+    PlayerSelectScreen(onStartGame: {})
 }
-

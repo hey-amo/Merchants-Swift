@@ -11,10 +11,19 @@ import SwiftUI
 struct GameCanvas: View {
     let players: [Player]
     let activePlayerID: Int?
+    let onPause: () -> Void
+    let onEndGame: () -> Void
 
-    init(players: [Player], activePlayerID: Int? = nil) {
+    init(
+        players: [Player],
+        activePlayerID: Int? = nil,
+        onPause: @escaping () -> Void = {},
+        onEndGame: @escaping () -> Void = {}
+    ) {
         self.players = players
         self.activePlayerID = activePlayerID
+        self.onPause = onPause
+        self.onEndGame = onEndGame
     }
 
     var body: some View {
@@ -24,6 +33,14 @@ struct GameCanvas: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(.systemBackground))
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Pause", action: onPause)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("End game", action: onEndGame)
+            }
+        }
     }
 }
 
