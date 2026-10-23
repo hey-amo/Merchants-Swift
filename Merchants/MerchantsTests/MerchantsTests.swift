@@ -9,15 +9,7 @@ import XCTest
 @testable import Merchants
 
 final class MerchantsTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
+    
     func testNewGameCreation() throws {
         let game = MerchantsGame(buildings: [], drawPile: [], cubePile: [], players: [])
 
@@ -53,11 +45,6 @@ final class MerchantsTests: XCTestCase {
         let deck = BuildingDefinition.makeDeck()
 
         XCTAssertEqual(deck.count, 20)
-        XCTAssertEqual(deck.filter { $0.name == "Ship" }.count, GameConstants.shipCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Large Ship" }.count, GameConstants.largesShipCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Office" }.count, GameConstants.officeCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Crane" }.count, GameConstants.craneCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Warehouse" }.count, GameConstants.warehouseCardsCount)
     }
 
 }

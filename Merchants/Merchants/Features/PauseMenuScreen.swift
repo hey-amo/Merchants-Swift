@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+private struct AudioSettings {
+    var musicVolume = 1.0
+    var soundVolume = 1.0
+}
+
 struct PauseMenuScreen: View {
     @State private var audioSettings = AudioSettings()
     var onContinue: () -> Void

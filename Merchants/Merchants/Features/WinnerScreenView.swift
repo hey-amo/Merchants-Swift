@@ -9,9 +9,11 @@ import SwiftUI
 
 struct WinnerScreenView: View {
     private let players: [Player]
+    private let onPlayAgain: () -> Void
 
-    init(players: [Player]) {
+    init(players: [Player], onPlayAgain: @escaping () -> Void = {}) {
         self.players = players
+        self.onPlayAgain = onPlayAgain
     }
     
     var sortedPlayers: [Player] {
@@ -73,10 +75,7 @@ struct WinnerScreenView: View {
 
                 Spacer(minLength: 24)
 
-                Button(action: {
-                    print("Play button pressed")
-                    // Hook for Play action
-                }) {
+                Button(action: onPlayAgain) {
                     Text("Play again")
                         .font(.title3)
                         .fontWeight(.semibold)
