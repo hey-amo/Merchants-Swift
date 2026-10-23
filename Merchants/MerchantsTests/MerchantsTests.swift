@@ -37,7 +37,7 @@ final class MerchantsTests: XCTestCase {
         let cubeCounts = Dictionary(grouping: setup.cubePile, by: { $0 })
             .mapValues { $0.count }
 
-        for color in CubeColour.allCases {
+        for color in GoodsCube.allCases {
             XCTAssertEqual(cardCounts[color], 10) // expect 10 of each good card
             XCTAssertEqual(cubeCounts[color], 5)  // expect 5 of each good cube
         }

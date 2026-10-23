@@ -12,15 +12,16 @@ import GameplayKit
 class Player: NSObject, GKGameModelPlayer, Codable {
     var playerId: Int
     var coins: Int
-    var hand: [CubeColour] // hand of good cards
+    var hand: [GoodsCube] // hand of good cards
     var tableau: [BuildingDefinition] = [] // buildings owned by the player
-    var cubes: [CubeColour] // cubes in possession
+    var cubes: [GoodsCube] // cubes in possession
     var isAI: Bool
     var isStartPlayer: Bool = false
     var avatar: String
     private var maxHandSize: Int = GameConstants.maxHandSize
     
-    init(playerId: Int, coins: Int, hand: [CubeColour] = [], tableau: [BuildingDefinition] = [], cubes: [CubeColour] = [], isAI: Bool = false, avatar: String = "", isStartPlayer: Bool = false) {
+    init(playerId: Int, coins: Int, hand: [GoodsCube] = [], tableau: [BuildingDefinition] = [], 
+        cubes: [GoodsCube] = [], isAI: Bool = false, avatar: String = "", isStartPlayer: Bool = false) {
         self.playerId = playerId
         self.coins = coins
         self.hand = hand
@@ -34,7 +35,8 @@ class Player: NSObject, GKGameModelPlayer, Codable {
 
 
     func copy(with zone: NSZone? = nil) -> Any {
-        return Player(playerId: playerId, coins: coins, hand: hand, tableau: tableau, cubes: cubes, isAI: isAI, avatar: avatar, isStartPlayer: isStartPlayer)
+        return Player(playerId: playerId, coins: coins, hand: hand, tableau: tableau, cubes: cubes, 
+            isAI: isAI, avatar: avatar, isStartPlayer: isStartPlayer)
     }
 }
 
@@ -49,7 +51,7 @@ extension Player: CoinUpdaterDelegate {
 }
 
 extension Player: HandUpdaterDelegate {
-    func updateHand(with cubes: [CubeColour]) throws {
+    func updateHand(with cubes: [GoodsCube]) throws {
         guard hand.count + cubes.count <= maxHandSize else {
             //print("Cannot add card to hand: exceeds maximum hand size.")
             throw HandErrorType.reachedMaxHandSize

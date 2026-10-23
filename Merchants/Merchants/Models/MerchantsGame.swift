@@ -62,7 +62,7 @@ extension TurnPhase {
 
  16 building cards
      - 14x ship (10 coins) - each player starts with 1 ship. Each ship can carry 1 goods cube. After purchasing a ship, the player immediatley takes a goods cube and places it on the purchased ship.
-     - 2x office (8 coins) - makes 1 more coin
+     - 2x office (8 coins) - makes 1 more coin when you deliver
      - 2x crane (12 coins) - allows a player to exchange 1 extra goods cube in phase 1
      - 2x warehouse (10 coins) - allows a player to take 1 more card in phase 1
 */
@@ -74,8 +74,7 @@ struct GameConstants {
     public static let cubeCount = 30
     public static let cubeCountPerColor = 5
     // building card count
-    public static let shipCardsCount = 10
-    public static let largesShipCardsCount = 4
+    public static let shipCardsCount = 14
     public static let officeCardsCount = 2
     public static let craneCardsCount = 2
     public static let warehouseCardsCount = 2
@@ -84,7 +83,7 @@ struct GameConstants {
     public static let marketplaceSize = 6
 }
 
-enum Good: String, CaseIterable, Codable, CustomStringConvertible {
+enum GoodsCube: String, CaseIterable, Codable, CustomStringConvertible {
     case sugar, indigo, spices, tea, silk, lumber
 
     var description: String {
@@ -98,6 +97,7 @@ enum Good: String, CaseIterable, Codable, CustomStringConvertible {
         }
     }
 
+    // map the goods cube to an asset resource
     func resourceImageName() -> String {
         switch self {
         case .sugar: return "crate-white"
@@ -110,36 +110,10 @@ enum Good: String, CaseIterable, Codable, CustomStringConvertible {
     }
 }
 
-enum CubeColour: Int, CaseIterable, Codable {
-    case white, blue, red, green, purple, brown
 
-    func resourceImageName() -> String {
-        switch self {
-        case .white: return "crate-white"
-        case .blue: return "crate-blue"
-        case .red: return "crate-red"
-        case .green: return "crate-green"
-        case .purple: return "crate-purple"
-        case .brown: return "crate-brown"
-        }
-    }
-
-    func descriptiveName() -> String {
-        switch self {
-        case .white: return "Sugar"
-        case .blue: return "Indigo"
-        case .red: return "Spices"
-        case .green: return "Tea"
-        case .purple: return "Silk"
-        case .brown: return "Lumber"
-        }
-    }
-
-}
-
-extension CubeColour {
-    static func makePile(count: Int) -> [CubeColour] {
-        CubeColour.allCases.flatMap { color in
+extension GoodsCube {
+    static func makePile(count: Int) -> [GoodsCube] {
+        GoodsCube.allCases.flatMap { color in
             Array(repeating: color, count: count)
         }
     }
@@ -150,10 +124,10 @@ struct BuildingDefinition: Equatable, Codable {
     let details: String
     let cost: Int
     let cubeCapacity: Int
-    let cubeSlots: [CubeColour]
+    let cubeSlots: [GoodsCube]
     let quantity: Int
 
-    init(name: String, details: String, cost: Int, cubeCapacity: Int = 0, cubeSlots: [CubeColour] = [], quantity: Int = 1) {
+    init(name: String, details: String, cost: Int, cubeCapacity: Int = 0, cubeSlots: [GoodsCube] = [], quantity: Int = 1) {
         self.name = name
         self.details = details
         self.cost = cost
@@ -166,8 +140,7 @@ struct BuildingDefinition: Equatable, Codable {
 extension BuildingDefinition {
     static func makeDeck() -> [BuildingDefinition] {
         [
-            BuildingDefinition(name: "Ship", details: "Each ship can hold 1 goods cube. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 10, cubeCapacity: 1, cubeSlots: [], quantity: GameConstants.shipCardsCount),
-            BuildingDefinition(name: "Large Ship", details: "Each ship can hold 2 goods cubes. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 25, cubeCapacity: 2, cubeSlots: [], quantity: GameConstants.largesShipCardsCount),
+            BuildingDefinition(name: "Ship", details: "Each ship can hold 1 goods cube. After purchasing a ship, the player immediately takes a goods cube and places it on the ship.", cost: 10, cubeCapacity: 1, cubeSlots: [], quantity: GameConstants.shipCardsCount),            
             BuildingDefinition(name: "Office", details: "Generates 1 additional coin when you deliver good cards.", cost: 8, quantity: GameConstants.officeCardsCount),
             BuildingDefinition(name: "Crane", details: "Allows a player to exchange 1 extra goods cube during Phase 1.", cost: 12, quantity: GameConstants.craneCardsCount),
             BuildingDefinition(name: "Warehouse", details: "Allows a player to draw 1 additional card during Phase 1.", cost: 10, quantity: GameConstants.warehouseCardsCount)
@@ -178,24 +151,24 @@ extension BuildingDefinition {
 }
 
 struct GameSetup {
-    let drawPile: [CubeColour]
-    let cubePile: [CubeColour]
-    let marketplace: [CubeColour]
+    let drawPile: [GoodsCube]
+    let cubePile: [GoodsCube]
+    let marketplace: [GoodsCube]
 }
 
 // Main game model
 class MerchantsGame {
     var currentState: GameState = .setup
     var buildings: [BuildingDefinition] = []
-    var drawPile: [CubeColour] // draw pile of good cards
-    var cubePile: [CubeColour] // draw pile of cubes
-    var marketplace: [CubeColour] = [] // cards marketplace is always 6 cards, filled in setup
+    var drawPile: [GoodsCube] // draw pile of good cards
+    var cubePile: [GoodsCube] // draw pile of cubes
+    var marketplace: [GoodsCube] = [] // cards marketplace is always 6 cards, filled in setup
     private var turnOrderManager: TurnOrderManager<Player>?
     var players: [Player] { turnOrderManager?.allPlayers ?? [] }
     var activePlayer: Player? { turnOrderManager?.currentPlayer }
     var currentTurnPhase: TurnPhase = .phase1
     
-    init(buildings: [BuildingDefinition], drawPile: [CubeColour], cubePile: [CubeColour], players: [Player], marketplace: [CubeColour] = []) {
+    init(buildings: [BuildingDefinition], drawPile: [GoodsCube], cubePile: [GoodsCube], players: [Player], marketplace: [GoodsCube] = []) {
         self.buildings = buildings
         self.drawPile = drawPile
         self.cubePile = cubePile
@@ -224,10 +197,10 @@ class MerchantsGame {
     }
 
     func makeDefaultGameSetup() -> GameSetup {
-        var drawPile = CubeColour.makePile(count: GameConstants.cardCountPerColor)
+        var drawPile = GoodsCube.makePile(count: GameConstants.cardCountPerColor)
         drawPile.shuffle()
 
-        var cubePile = CubeColour.makePile(count: GameConstants.cubeCountPerColor)
+        var cubePile = GoodsCube.makePile(count: GameConstants.cubeCountPerColor)
         cubePile.shuffle()
 
         return GameSetup(drawPile: drawPile, cubePile: cubePile, marketplace: [])

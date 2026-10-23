@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// Displays a single player avatar
+
 enum AvatarResource: String {
     case avt1 = "avt-1"
     case avt2 = "avt-2"

@@ -7,17 +7,19 @@
 
 import SwiftUI
 
+// Displays a single goods cube
+
 struct CubeView: View {
-    let cubeColour: CubeColour
+    let cube: GoodsCube
     let size: CGFloat
 
-    init(cubeColour: CubeColour, size: CGFloat = 85) {
-        self.cubeColour = cubeColour
+    init(cube: GoodsCube, size: CGFloat = 85) {
+        self.cube = cube
         self.size = size
     }
 
     var body: some View {
-        Image(cubeColour.resourceImageName())
+        Image(cube.resourceImageName())
             .resizable()
             .scaledToFit()
             .frame(width: size, height: size)
@@ -25,5 +27,5 @@ struct CubeView: View {
 }
 
 #Preview {
-    CubeView(cubeColour: .blue)
+    CubeView(cube: .indigo)
 }

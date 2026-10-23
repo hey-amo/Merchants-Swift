@@ -11,6 +11,8 @@ struct GameHeaderView: View {
 
     var body: some View {
         HStack(spacing: 12) {
+
+            // List players in turn order
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(players, id: \.playerId) { player in
@@ -33,6 +35,7 @@ struct GameHeaderView: View {
                 .padding(.horizontal, 4)
             }
 
+            // Notifications bell
             Button {
                 print("Notifications tapped")
             } label: {
@@ -44,6 +47,7 @@ struct GameHeaderView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Notifications")
 
+            // Menu button
             Button {
                 print("Menu tapped")
             } label: {
