@@ -8,7 +8,34 @@
 import XCTest
 @testable import Merchants
 
+private final class DummyPlayer: CoinUpdaterDelegate {
+    var coins = 0
+
+    func updateCoins(amount: Int) throws {
+        coins += amount
+    }
+}
+
 final class BankTests: XCTestCase {
+
+    func testCredit_UpdatesDummyPlayerThroughProtocol() throws {
+        let bank = try Bank()
+        let player = DummyPlayer()
+
+        try bank.apply(.credit(100), to: player)
+
+        XCTAssertEqual(player.coins, 100)
+    }
+
+    func testDebit_UpdatesDummyPlayerThroughProtocol() throws {
+        let bank = try Bank()
+        let player = DummyPlayer()
+        try bank.apply(.credit(100), to: player)
+
+        try bank.apply(.debit(50), to: player)
+
+        XCTAssertEqual(player.coins, 50)
+    }
 
     func testBalance() throws {
         let expected = 100
@@ -19,13 +46,13 @@ final class BankTests: XCTestCase {
     func testCredit_PositiveValue() throws {
         let expected = 100
         let bank = try Bank(0)
-        try bank.perform(.credit(expected))
+        try bank.apply(.credit(expected))
         XCTAssertEqual(bank.balance, 100)
     }
 
     func testCredit_NegativeValue_ShouldFail() throws {
         let bank = try Bank(100)
-        XCTAssertThrowsError(try bank.perform(.credit(-10))) { error in
+        XCTAssertThrowsError(try bank.apply(.credit(-10))) { error in
             XCTAssertEqual(error as? IntegerErrorType, .negativeIntegerValue)
         }
     }
@@ -36,20 +63,20 @@ final class BankTests: XCTestCase {
         let expectedBalance = deposit - subtract
         let bank = try Bank(deposit)
         XCTAssertEqual(bank.balance, deposit)
-        try bank.perform(.debit(subtract))
+        try bank.apply(.debit(subtract))
         XCTAssertEqual(bank.balance, expectedBalance)
     }
 
     func testDebit_NegativeValue_ShouldFail() throws {
         let bank = try Bank(100)
-        XCTAssertThrowsError(try bank.perform(.debit(-10))) { error in
+        XCTAssertThrowsError(try bank.apply(.debit(-10))) { error in
             XCTAssertEqual(error as? IntegerErrorType, .negativeIntegerValue)
         }
     }
 
     func testDebit_NotEnoughFunds_ShouldFail() throws {
         let bank = try Bank(10)
-        XCTAssertThrowsError(try bank.perform(.debit(20))) { error in
+        XCTAssertThrowsError(try bank.apply(.debit(20))) { error in
             XCTAssertEqual(error as? IntegerErrorType, .notEnoughFunds)
         }
     }
@@ -60,27 +87,4 @@ final class BankTests: XCTestCase {
         }
     }
 
-    func testInitWithCoder_RoundTripsBalance() throws {
-        let bank = try Bank(42)
-        let data = NSMutableData()
-        let archiver = NSKeyedArchiver(forWritingWith: data)
-        bank.encode(with: archiver)
-        archiver.finishEncoding()
-
-        let unarchiver = NSKeyedUnarchiver(forReadingFrom: data as Data)
-        let decodedBank = Bank(withCoder: unarchiver)
-        XCTAssertEqual(decodedBank?.balance, 42)
-    }
-
-    func testSaveWithCoder_EncodesBalance() throws {
-        let bank = try Bank(27)
-        let data = NSMutableData()
-        let archiver = NSKeyedArchiver(forWritingWith: data)
-        bank.save(with: archiver)
-        archiver.finishEncoding()
-
-        let unarchiver = NSKeyedUnarchiver(forReadingFrom: data as Data)
-        let decodedBank = Bank(withCoder: unarchiver)
-        XCTAssertEqual(decodedBank?.balance, 27)
-    }
 }

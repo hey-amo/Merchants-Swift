@@ -2,47 +2,58 @@
 
 import Foundation
 
-protocol HandManagerUpdater: AnyObject {
-    func updateHand(with cubes: [CubeColour])
+enum HandErrorType: Error {
+    case handIsEmpty
+    case reachedMaxHandSize
 }
 
-// This shouldn't care about the player
+extension HandErrorType: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .handIsEmpty: return NSLocalizedString("Hand is empty", comment: "handIsEmpty")
+        case .reachedMaxHandSize: return NSLocalizedString("Cannot perform: exceeds maximum hand size", comment: "reachedMaxHandSize")
+        }
+    }
+}
+
+protocol HandUpdaterDelegate: AnyObject {
+    func updateHand(with cubes: [GoodsCube]) throws
+}
 
 class HandManager {
-	private var _hand: [CubeColour] // hand of good cards
+	private var _hand: [GoodsCube] // hand of good cards
 	private var _handSize: Int { 
 		get {
 			return _hand.count
 		}
 	}
 	private var _maxHandSize: Int 
-	public var hand: [CubeColour] {
+	public var hand: [GoodsCube] {
 		get {
-			return _self.hand
+			return _hand
 		}
 	}
 
-	init(hand: [CubeColour], maxHandSize: Int = 0) {
+	init(hand: [GoodsCube], maxHandSize: Int = 0) {
 		self._hand = hand
 		self._maxHandSize = maxHandSize
 	}
 
 	// add cubes
-	func add(cubes: [CubeColour]) {
-        guard _handSize + cubes.count <= maxHandSize else {
-            print("Cannot add card to hand: exceeds maximum hand size.")
-            return
+	func add(cubes: [GoodsCube]) throws {
+		guard _handSize + cubes.count <= _maxHandSize else {
+            //print("Cannot add card to hand: exceeds maximum hand size.")
+            //return
+            throw HandErrorType.reachedMaxHandSize
         }
-        hand.append(contentsOf: cubes)
+		_hand.append(contentsOf: cubes)
     }
 
     // remove a single cube 
 	func removeCube(atIndex: Int = 0) {
-		guard atIndex >= 0 else { return }
-		guard _hand.count > 0 else { return }
-		// do safe handling of index, compare against hand.count
-		// remove the cube, only when safely found the cube
-		// if it can't find the cube, fail
+        guard _hand.count > 0 else { return }
+		guard _hand.indices.contains(atIndex) else { return }
+		_hand.remove(at: atIndex)
 	}
 
 	func clearAll() {

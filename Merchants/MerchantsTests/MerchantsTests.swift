@@ -28,8 +28,8 @@ final class MerchantsTests: XCTestCase {
 
         let setup = game.makeDefaultGameSetup()
 
-        XCTAssertEqual(setup.drawPile.count, CardConstants.totalGoodCards) // expect 60 good cards
-        XCTAssertEqual(setup.cubePile.count, CardConstants.cubeCount) // expect 30 good cubes
+        XCTAssertEqual(setup.drawPile.count, GameConstants.totalGoodCards) // expect 60 good cards
+        XCTAssertEqual(setup.cubePile.count, GameConstants.cubeCount) // expect 30 good cubes
         XCTAssertEqual(setup.marketplace.count, 0) // expect 0 cards in marketplace
 
         let cardCounts = Dictionary(grouping: setup.drawPile, by: { $0 })
@@ -37,27 +37,27 @@ final class MerchantsTests: XCTestCase {
         let cubeCounts = Dictionary(grouping: setup.cubePile, by: { $0 })
             .mapValues { $0.count }
 
-        for color in CubeColour.allCases {
+        for color in GoodsCube.allCases {
             XCTAssertEqual(cardCounts[color], 10) // expect 10 of each good card
             XCTAssertEqual(cubeCounts[color], 5)  // expect 5 of each good cube
         }
 
         game.newGame(players: dummyPlayers)
 
-        XCTAssertEqual(game.drawPile.count, CardConstants.totalGoodCards - (dummyPlayers.count * 3) - CardConstants.marketplaceSize)
-        XCTAssertEqual(game.cubePile.count, CardConstants.cubeCount)
-        XCTAssertEqual(game.marketplace.count, CardConstants.marketplaceSize)
+        XCTAssertEqual(game.drawPile.count, GameConstants.totalGoodCards - (dummyPlayers.count * 3) - GameConstants.marketplaceSize)
+        XCTAssertEqual(game.cubePile.count, GameConstants.cubeCount)
+        XCTAssertEqual(game.marketplace.count, GameConstants.marketplaceSize)
     }
 
     func testBuildingDefinitionsCreateExpectedDeck() throws {
         let deck = BuildingDefinition.makeDeck()
 
         XCTAssertEqual(deck.count, 20)
-        XCTAssertEqual(deck.filter { $0.name == "Ship" }.count, CardConstants.shipCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Large Ship" }.count, CardConstants.largesShipCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Office" }.count, CardConstants.officeCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Crane" }.count, CardConstants.craneCardsCount)
-        XCTAssertEqual(deck.filter { $0.name == "Warehouse" }.count, CardConstants.warehouseCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Ship" }.count, GameConstants.shipCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Large Ship" }.count, GameConstants.largesShipCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Office" }.count, GameConstants.officeCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Crane" }.count, GameConstants.craneCardsCount)
+        XCTAssertEqual(deck.filter { $0.name == "Warehouse" }.count, GameConstants.warehouseCardsCount)
     }
 
 }

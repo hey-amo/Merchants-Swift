@@ -7,14 +7,25 @@
 
 import SwiftUI
 
-// Display a single cube
+// Displays a single goods cube
 
 struct CubeView: View {
+    let cube: GoodsCube
+    let size: CGFloat
+
+    init(cube: GoodsCube, size: CGFloat = 85) {
+        self.cube = cube
+        self.size = size
+    }
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Image(cube.resourceImageName())
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
     }
 }
 
 #Preview {
-    CubeView()
+    CubeView(cube: .indigo)
 }

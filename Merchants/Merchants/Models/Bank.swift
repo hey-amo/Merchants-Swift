@@ -21,7 +21,11 @@ enum Transaction {
     case debit(Int)
 }
 
-class Bank: NSObject, NSCoding {
+protocol CoinUpdaterDelegate {
+    func updateCoins(amount: Int) throws
+}
+
+class Bank {    
     private var _balance: Int
     public var balance: Int { _balance }
 
@@ -30,39 +34,28 @@ class Bank: NSObject, NSCoding {
             throw IntegerErrorType.negativeIntegerValue
         }
         self._balance = balance
-        super.init()
     }
 
-    required init?(coder: NSCoder) {
-        let decodedBalance = coder.decodeInteger(forKey: "balance")
-        guard decodedBalance >= 0 else {
-            return nil
-        }
-        self._balance = decodedBalance
-        super.init()
-    }
-
-    convenience init?(withCoder coder: NSCoder) {
-        self.init(coder: coder)
-    }
-
-    func perform(_ t: Transaction) throws {
+    func apply(_ t: Transaction) throws {
         switch t {
         case .credit(let amount): try credit(amount)
         case .debit(let amount): try debit(amount)
         }
     }
 
-    func encode(with coder: NSCoder) {
-        coder.encode(_balance, forKey: "balance")
-    }
-
-    func save(with coder: NSCoder) {
-        encode(with: coder)
-    }
-
-    func saveWithCoder(_ coder: NSCoder) {
-        save(with: coder)
+    func apply(_ t: Transaction, to updater: CoinUpdaterDelegate) throws {
+        switch t {
+        case .credit(let amount):
+            guard amount > 0 else {
+                throw IntegerErrorType.negativeIntegerValue
+            }
+            try updater.updateCoins(amount: amount)
+        case .debit(let amount):
+            guard amount > 0 else {
+                throw IntegerErrorType.negativeIntegerValue
+            }
+            try updater.updateCoins(amount: -amount)
+        }
     }
 }
 

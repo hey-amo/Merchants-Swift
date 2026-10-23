@@ -1,17 +1,17 @@
 import Foundation
 
-public enum GameMessageType: Int, Codable {
+enum GameMessageType: Int, Codable {
     case info, warning, success, error
 }
 
-public protocol GameMessageHandling: AnyObject {
+protocol GameMessageHandling: AnyObject {
     var messages: [GameMessage] { get }
 
     func add(_ message: GameMessage)
     func clear()
 }
 
-public final class GameMessageHandler: GameMessageHandling {
+final class GameMessageHandler: GameMessageHandling {
     public private(set) var messages: [GameMessage] = []
 
     public init() {}
@@ -20,32 +20,33 @@ public final class GameMessageHandler: GameMessageHandling {
         return messages.sorted { $0.timestamp < $1.timestamp }
     }
 
-    public func add(_ message: GameMessage) {
+    func add(_ message: GameMessage) {
         messages.append(message)
     }
 
-    public func clear() {
+    func clear() {
         messages.removeAll()
     }
 }
 
-public struct GameMessage: Codable, Hashable {
+struct GameMessage: Codable, Hashable {
     private let id = UUID()
-    public let message: String
-    public let timestamp: Date
-    public let type: GameMessageType
+    let message: String
+    let timestamp: Date
+    let type: GameMessageType
 
-    public init(message: String, timestamp: Date = Date(), messageType: GameMessageType = .info) {
+    init(message: String, timestamp: Date = Date(), type: GameMessageType = .info) {
         self.message = message
         self.timestamp = timestamp
-        self.type = messageType
+        self.type = type
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 
     enum CodingKeys: String, CodingKey {
+        case id
         case message
         case timestamp
         case type
@@ -53,6 +54,7 @@ public struct GameMessage: Codable, Hashable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        //self.id = try container.decode(String.self, forKey: .id)
         self.message = try container.decode(String.self, forKey: .message)
         self.timestamp = try container.decode(Date.self, forKey: .timestamp)
         self.type = try container.decode(GameMessageType.self, forKey: .type)

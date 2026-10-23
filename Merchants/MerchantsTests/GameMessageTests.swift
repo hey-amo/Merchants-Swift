@@ -5,6 +5,7 @@ final class GameMessageTests: XCTestCase {
 
     func testAddGameMessage() throws {
         let gameMessageHandler = GameMessageHandler()
+        
         let message1 = GameMessage(message: "Test message 1", timestamp: Date(), type: .info)
         let message2 = GameMessage(message: "Test message 2", timestamp: Date().addingTimeInterval(10), type: .warning)
 
