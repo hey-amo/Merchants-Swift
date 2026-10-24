@@ -60,6 +60,8 @@ final class PayoutTests: XCTestCase {
 
         XCTAssertEqual(game.marketplace.count, GameConstants.marketplaceSize)
         XCTAssertEqual(game.marketplace.filter { $0 == .indigo }.count, 3)
+
+        // Expect payout of coins based on the number of cubes each player has in the marketplace after delivery.
         XCTAssertEqual(firstPlayer.coins, 17)
         XCTAssertEqual(secondPlayer.coins, 25)
         XCTAssertEqual(thirdPlayer.coins, 30)
